@@ -13,7 +13,16 @@ public class Communicator {
     /**
      * Allocate a new communicator.
      */
+   
+    
     public Communicator() {
+         conditionVariablelock = new Lock();
+         speakerVariable = new Condition2((conditionVariablelock));
+         listenerVariable = new Condition2((conditionVariablelock));
+         sleepingListenerCount = 0;
+         sleepingSpeakerCount = 0;
+         DataVariable = 0;
+        
     }
 
     /**
@@ -27,6 +36,27 @@ public class Communicator {
      * @param	word	the integer to transfer.
      */
     public void speak(int word) {
+        conditionVariablelock.acquire();
+        
+        if(sleepingListenerCount>0){
+            listenerVariable.wake();
+            DataVariable = word;
+            sleepingListenerCount--;
+        }
+        
+        else{
+            sleepingSpeakerCount++;
+            speakerVariable.sleep();
+            DataVariable = word;
+            listenerVariable.wake();
+            sleepingListenerCount--;
+            
+        }
+        
+        
+        
+        conditionVariablelock.release();
+        
     }
 
     /**
@@ -35,7 +65,40 @@ public class Communicator {
      *
      * @return	the integer transferred.
      */    
+    
+    
     public int listen() {
-	return 0;
+        int ret = 0;
+        conditionVariablelock.acquire();
+        
+        if(sleepingSpeakerCount>0){
+            speakerVariable.wake();
+            sleepingListenerCount++;
+            listenerVariable.sleep();
+            ret = DataVariable;
+            
+            
+            
+        }
+        else{
+            sleepingListenerCount++;
+            listenerVariable.sleep();
+            ret = DataVariable;
+            
+        }
+        
+        conditionVariablelock.release();
+        
+        
+	return ret;
     }
+    
+     private Lock conditionVariablelock;
+     private Condition2 speakerVariable;
+     private Condition2 listenerVariable;
+     private int DataVariable;
+     private int sleepingSpeakerCount;
+     private int sleepingListenerCount;
+     
+     
 }
