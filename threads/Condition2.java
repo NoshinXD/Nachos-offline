@@ -74,6 +74,101 @@ public class Condition2 {
         
         Machine.interrupt().restore(s);
     }
+    
+    private static class Listener implements Runnable {
+	Listener(int which, Communicator com) {
+	    this.which = which;
+            this.com = com;
+	}
+	
+	public void run() {
+	    for(int i=0; i<4; i++)
+            {
+                KThread.yield();
+                com.listen();
+                System.out.println("*** " + KThread.currentThread().getName() + " looped "
+				   + i + " times");
+                KThread.yield();
+            }
+	}
+
+	private int which;
+        private Communicator com;
+    }
+    
+    private static class Speaker implements Runnable {
+	Speaker(int which, Communicator com) {
+	    this.which = which;
+            this.com = com;
+	}
+	
+	public void run() {
+	    for(int i=0; i<6; i++)
+            {
+                KThread.yield();
+                com.speak(i);
+                System.out.println("*** " + KThread.currentThread().getName() + " looped "
+				   + i + " times");
+                KThread.yield();
+               
+            }
+	}
+
+	private int which;
+        private Communicator com;
+    }
+   
+    
+    private static class Condition2Test implements Runnable {
+	Condition2Test(int which) {
+	    this.which = which;
+            com = new Communicator();
+	}
+	
+	public void run() {
+	    //System.out.println("Testing for task 2 & 4 initiated...");
+            
+            KThread l1 = new KThread(new Listener(1, com)).setName("listener thread 1");
+            KThread l2 = new KThread(new Listener(2, com)).setName("listener thread 2");
+            KThread l3 = new KThread(new Listener(3, com)).setName("listener thread 3");
+            
+            KThread s1 = new KThread(new Speaker(1, com)).setName("speaker thread 1");
+            KThread s2 = new KThread(new Speaker(2, com)).setName("speaker thread 2");
+            
+            l1.fork();
+            l2.fork();
+            l3.fork();
+            
+            s1.fork();
+            s2.fork();
+            
+            l1.join();
+            l2.join();
+            l3.join();
+            
+            s1.join();
+            s2.join();
+            
+            //System.out.println("Testing for task 2 & 4 finished!");
+	}
+        
+    
+	private int which;
+        private Communicator com;
+        
+    }
+    
+    public static void selfTest() {
+	//Lib.debug(dbgThread, "Enter KThread.selfTest");
+	
+	//new KThread(new PingTest(1)).setName("forked thread").fork();
+        //System.out.println("in Kthread_selfTest after fork");
+	//new PingTest(0).run();
+        //new KThread(new PingTest(1)).setName("forked thread1").fork();
+        //new KThread(new PingTest(2)).setName("forked thread2").fork();
+        //new KThread(new PingTest(3)).setName("forked thread3").fork();
+        new KThread(new Condition2Test(1)).setName("forked thread1").fork();
+    }
 
     private Lock conditionLock;
     

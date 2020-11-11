@@ -85,6 +85,49 @@ public class Alarm {
 	    KThread.yield();*/
     }
     
+    private static class AlarmTest implements Runnable {
+	AlarmTest(long time, Alarm alarm) {
+	    this.time = time;
+            this.alarm = alarm;
+	}
+	
+	public void run() {
+	    /*for (int i=0; i<5; i++) {
+		System.out.println("*** thread " + which + " looped "
+				   + i + " times");
+		currentThread.yield();
+	    }*/
+            
+            /*KThread k1 = new KThread(new PingTest(which + 1)).setName("forked thread " + (which + 1));
+            k1.fork();
+            k1.join();*/
+            System.out.println(KThread.currentThread().getName() + "rings at " + Machine.timer().getTime());
+            alarm.waitUntil(time);
+            System.out.println(KThread.currentThread().getName() + "rings at " + Machine.timer().getTime());  
+	}
+        
+    
+	private long time;
+        private Alarm alarm;
+    }
+    
+    public static void selfTest() {
+	Alarm alarm = ThreadedKernel.alarm;
+        long time1 = 10000;
+        long time2 = 20000;
+        long time3 = 30000;
+        KThread k1 = new KThread(new AlarmTest(time1, alarm)).setName("alarmed thread1");
+        k1.fork();
+        KThread k2 = new KThread(new AlarmTest(time2, alarm)).setName("alarmed thread2");
+        k2.fork();
+        KThread k3 = new KThread(new AlarmTest(time3, alarm)).setName("alarmed thread3");
+        k3.fork();
+        
+        k1.join();
+        k2.join();
+        k3.join();
+    }
+    
     private class Pair {
         public KThread t;
         public long time;

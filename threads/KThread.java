@@ -439,6 +439,37 @@ public class KThread {
 
 	private int which;
     }
+    
+    private static class JoinTest implements Runnable {
+	JoinTest(int which) {
+	    this.which = which;
+	}
+	
+	public void run() {
+	    /*for (int i=0; i<5; i++) {
+		System.out.println("*** thread " + which + " looped "
+				   + i + " times");
+		currentThread.yield();
+	    }*/
+            System.out.println("Starting the Join thread...");
+            System.out.println("Forking 2 threads to call join.");
+            KThread k1 = new KThread(new PingTest(which + 1)).setName("forked thread " + (which + 1));
+            k1.fork();
+            k1.join();
+            KThread k2 = new KThread(new PingTest(which + 2)).setName("forked thread " + (which + 2));
+            k2.fork();
+            KThread k3 = new KThread(new PingTest(which + 3)).setName("forked thread " + (which + 3));
+            k3.fork();
+            
+            k2.join();
+            k3.join();
+            
+            System.out.println("Terminating Join thread!");
+	}
+        
+    
+	private int which;
+    }
 
     /**
      * Tests whether this module is working.
@@ -446,9 +477,13 @@ public class KThread {
     public static void selfTest() {
 	Lib.debug(dbgThread, "Enter KThread.selfTest");
 	
-	new KThread(new PingTest(1)).setName("forked thread").fork();
-        //////System.out.println("in Kthread_selfTest after fork");
-	new PingTest(0).run();
+	//new KThread(new PingTest(1)).setName("forked thread").fork();
+        //System.out.println("in Kthread_selfTest after fork");
+	//new PingTest(0).run();
+        //new KThread(new PingTest(1)).setName("forked thread1").fork();
+        //new KThread(new PingTest(2)).setName("forked thread2").fork();
+        //new KThread(new PingTest(3)).setName("forked thread3").fork();
+        new KThread(new JoinTest(1)).setName("forked thread1").fork();
     }
 
     private static final char dbgThread = 't';
