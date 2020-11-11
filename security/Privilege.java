@@ -101,7 +101,7 @@ public abstract class Privilege {
 		((Runnable) i.next()).run();
 	    }
 	    catch (Throwable e) {
-		System.out.println("exit() notification handler failed");
+		//////System.out.println("exit() notification handler failed");
 	    }
 	}
     }

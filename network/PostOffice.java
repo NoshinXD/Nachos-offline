@@ -106,7 +106,7 @@ public class PostOffice {
      */
     public void send(MailMessage mail) {
 	if (Lib.test(dbgNet))
-	    System.out.println("sending mail: " + mail);
+	    //////System.out.println("sending mail: " + mail);
 
 	sendLock.acquire();
 

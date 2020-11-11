@@ -590,7 +590,7 @@ public final class Processor {
 		writeRegister(regBadVAddr, badVAddr);
 
 	    if (Lib.test(dbgDisassemble) || Lib.test(dbgFullDisassemble))
-		System.out.println("exception: " + exceptionNames[cause]);
+		//////System.out.println("exception: " + exceptionNames[cause]);
 
 	    finishLoad();
 

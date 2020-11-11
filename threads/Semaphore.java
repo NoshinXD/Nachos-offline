@@ -74,7 +74,7 @@ public class Semaphore {
 	
 	public void run() {
 	    for (int i=0; i<10; i++) {
-                //System.out.println("in pingtest : " + i);
+                ////////System.out.println("in pingtest : " + i);
 		ping.P();
 		pong.V();
 	    }
@@ -92,10 +92,10 @@ public class Semaphore {
 	Semaphore pong = new Semaphore(0);
 
 	new KThread(new PingTest(ping, pong)).setName("ping").fork();
-        System.out.println("in semaphore_selftest: after fork");
+        //////System.out.println("in semaphore_selftest: after fork");
 
 	for (int i=0; i<10; i++) {
-            //System.out.println("in selfTest: " + i);
+            ////////System.out.println("in selfTest: " + i);
 	    ping.V();
 	    pong.P();
 	}

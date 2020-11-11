@@ -44,22 +44,22 @@ public class KThread {
      */
     public KThread() {
 	if (currentThread != null) {
-            System.out.println("\nKThread_constructor (currentThread != null)  at 47. currentThread = " + currentThread.getName());
+            //////System.out.println("\nKThread_constructor (currentThread != null)  at 47. currentThread = " + currentThread.getName());
 	    tcb = new TCB();
 	}	    
 	else {
-            System.out.println("\nKThread_constructor (currentThread == null)  at 49.\n");
+            //////System.out.println("\nKThread_constructor (currentThread == null)  at 49.\n");
 	    readyQueue = ThreadedKernel.scheduler.newThreadQueue(false);
 	    readyQueue.acquire(this);	    
 
 	    currentThread = this;
 	    tcb = TCB.currentTCB();
 	    name = "main";
-            System.out.println("\nKThread-contructor before restoreState at 58.\n");
+            //////System.out.println("\nKThread-contructor before restoreState at 58.\n");
 	    restoreState();
-            System.out.println("\nKThread-contructor before createIdleThread at 60.\n");
+            //////System.out.println("\nKThread-contructor before createIdleThread at 60.\n");
 	    createIdleThread();
-            System.out.println("\nKThread-contructor after createIdleThread at 62.\n");
+            //////System.out.println("\nKThread-contructor after createIdleThread at 62.\n");
 	}
     }
 
@@ -141,7 +141,7 @@ public class KThread {
      * its target's <tt>run</tt> method).
      */
     public void fork() {
-        System.out.println("1st line of KThread_frok at 142.\n");
+        //////System.out.println("1st line of KThread_frok at 142.\n");
 	Lib.assertTrue(status == statusNew);
 	Lib.assertTrue(target != null);
 	
@@ -152,24 +152,24 @@ public class KThread {
        
 	tcb.start(new Runnable() {
 		public void run() {
-                    System.out.println("KThread_fork after run at 150.\n");
+                    //////System.out.println("KThread_fork after run at 150.\n");
 		    runThread();
 		}
 	    });
-        System.out.println("in KThread_fork: before ready at 157\n");
+        //////System.out.println("in KThread_fork: before ready at 157\n");
 	ready();
-        System.out.println("in KThread_fork: after ready at 159\n");
+        //////System.out.println("in KThread_fork: after ready at 159\n");
 	
 	Machine.interrupt().restore(intStatus);
     }
 
     private void runThread() {
 	begin();
-        System.out.println("in KThread_runThread: after begin");
+        //////System.out.println("in KThread_runThread: after begin");
 	target.run();
-        System.out.println("in KThread_runThread: after target.run");
+        //////System.out.println("in KThread_runThread: after target.run");
 	finish();
-        System.out.println("in KThread_runThread: after finish");
+        //////System.out.println("in KThread_runThread: after finish");
     }
 
     private void begin() {
@@ -230,16 +230,16 @@ public class KThread {
      * called with interrupts disabled.
      */
     public static void yield() {
-        System.out.println("1st line of KThread_yield at 226\n");
+        //////System.out.println("1st line of KThread_yield at 226\n");
 	Lib.debug(dbgThread, "Yielding thread: " + currentThread.toString());
 	
 	Lib.assertTrue(currentThread.status == statusRunning);
 	
 	boolean intStatus = Machine.interrupt().disable();
 
-        System.out.println("\nKThread_yield before ready at 233 " + currentThread.getName());
+        //////System.out.println("\nKThread_yield before ready at 233 " + currentThread.getName());
 	currentThread.ready();
-        System.out.println("\nKThread_yield after ready at 233 " + currentThread.getName());
+        //////System.out.println("\nKThread_yield after ready at 233 " + currentThread.getName());
 
 	runNextThread();
 	
@@ -273,7 +273,7 @@ public class KThread {
      * ready queue.
      */
     public void ready() {
-        System.out.println("KThread_ready at 267 " + currentThread.getName());
+        //////System.out.println("KThread_ready at 267 " + currentThread.getName());
 	Lib.debug(dbgThread, "Ready thread: " + toString());
 	
 	Lib.assertTrue(Machine.interrupt().disabled());
@@ -325,12 +325,12 @@ public class KThread {
      * Note that <tt>ready()</tt> never adds the idle thread to the ready set.
      */
     private static void createIdleThread() {
-        System.out.println("1st line of KThread_createIdleThread at 305\n");
+        //////System.out.println("1st line of KThread_createIdleThread at 305\n");
 	Lib.assertTrue(idleThread == null);
 	
 	idleThread = new KThread(new Runnable() {
 	    public void run() { 
-                System.out.println("KThread_createIdleThread_run at 303 before while.\n");
+                //////System.out.println("KThread_createIdleThread_run at 303 before while.\n");
                 while (true) yield(); 
             }
 	});
@@ -338,9 +338,9 @@ public class KThread {
 
 	Machine.autoGrader().setIdleThread(idleThread);
 	
-        System.out.println("KThread_createIdleThread at 311 befor fork.");
+        //////System.out.println("KThread_createIdleThread at 311 befor fork.");
 	idleThread.fork();
-        System.out.println("KThread_createIdleThread at 313 after fork.");
+        //////System.out.println("KThread_createIdleThread at 313 after fork.");
     }
     
     /**
@@ -397,7 +397,7 @@ public class KThread {
      * <tt>statusRunning</tt> and check <tt>toBeDestroyed</tt>.
      */
     protected void restoreState() {
-        System.out.println("1st line of KThread_restoreState at 378 " + currentThread.getName());
+        //////System.out.println("1st line of KThread_restoreState at 378 " + currentThread.getName());
 	Lib.debug(dbgThread, "Running thread: " + currentThread.toString());
 	
 	Lib.assertTrue(Machine.interrupt().disabled());
@@ -447,7 +447,7 @@ public class KThread {
 	Lib.debug(dbgThread, "Enter KThread.selfTest");
 	
 	new KThread(new PingTest(1)).setName("forked thread").fork();
-        System.out.println("in Kthread_selfTest after fork");
+        //////System.out.println("in Kthread_selfTest after fork");
 	new PingTest(0).run();
     }
 

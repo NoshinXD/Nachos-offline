@@ -86,7 +86,7 @@ public final class TCB {
 	this.target = target;
 
 	if (!isFirstTCB) {
-            System.out.println("TCB_start if isFirstTCB false hoy at 89 Thread.\n");
+            //////System.out.println("TCB_start if isFirstTCB false hoy at 89 Thread.\n");
 	    /* If this is not the first TCB, we have to make a new Java thread
 	     * to run it. Creating Java threads is a privileged operation.
 	     */
@@ -110,7 +110,7 @@ public final class TCB {
 	    currentTCB.waitForInterrupt();
 	}
 	else {
-            System.out.println("\nTCB_start if isFirstTCB true hoy at 113.\n");
+            //////System.out.println("\nTCB_start if isFirstTCB true hoy at 113.\n");
 	    /* This is the first TCB, so we don't need to make a new Java
 	     * thread to run it; we just steal the current Java thread.
 	     */
@@ -214,19 +214,19 @@ public final class TCB {
 	Lib.assertTrue(javaThread == Thread.currentThread());
 
 	if (!isFirstTCB) {
-            System.out.println("\nTCB_threadroot; isFirstTCB false hole ekhane at 215 " + javaThread.getName());
+            //////System.out.println("\nTCB_threadroot; isFirstTCB false hole ekhane at 215 " + javaThread.getName());
 	    /* start() is waiting for us to wake it up, signalling that it's OK
 	     * to context switch to us. We leave the running flag false so that
 	     * we'll still run if a context switch happens before we go to
 	     * sleep. All we have to do is wake up the current TCB and then
 	     * wait to get woken up by contextSwitch() or destroy().
 	     */
-	    System.out.println("\nTCB_threadroot; at 222 ; before interrupt currentTCB " + currentTCB.javaThread.getName());
+	    //////System.out.println("\nTCB_threadroot; at 222 ; before interrupt currentTCB " + currentTCB.javaThread.getName());
 	    currentTCB.interrupt();
-            System.out.println("\nTCB_threadroot; at 224 ; after interrupt currentTCB " + currentTCB.javaThread.getName());
-            System.out.println("\nTCB_threadroot; at 225 ; before yield this " + currentTCB.javaThread.getName());
+            //////System.out.println("\nTCB_threadroot; at 224 ; after interrupt currentTCB " + currentTCB.javaThread.getName());
+            //////System.out.println("\nTCB_threadroot; at 225 ; before yield this " + currentTCB.javaThread.getName());
 	    this.yield();
-            System.out.println("\nTCB_threadroot; at 227 ; after yield this " + currentTCB.javaThread.getName());
+            //////System.out.println("\nTCB_threadroot; at 227 ; after yield this " + currentTCB.javaThread.getName());
 	}
 	else {
 	    /* start() called us directly, so we just need to initialize
@@ -235,11 +235,11 @@ public final class TCB {
 	    
 	    currentTCB = this;
 	    running = true;
-            System.out.println("\nTCB_threadroot; isFirstTCB true hole ekhane at 238. Thread" + currentTCB.javaThread.getName());
+            //////System.out.println("\nTCB_threadroot; isFirstTCB true hole ekhane at 238. Thread" + currentTCB.javaThread.getName());
 	}
 
 	try {
-            System.out.println("\nTCB_threadroot before run at 242 " + currentTCB.javaThread.getName());
+            //////System.out.println("\nTCB_threadroot before run at 242 " + currentTCB.javaThread.getName());
 	    target.run();
 
 	    // no way out of here without going throw one of the catch blocks
@@ -277,18 +277,18 @@ public final class TCB {
      * this TCB and return.
      */
     private void yield() {
-        System.out.println("\n1st line of TCB_yield at 279 " + javaThread.getName());
+        //////System.out.println("\n1st line of TCB_yield at 279 " + javaThread.getName());
 	waitForInterrupt();
-	System.out.println("\nTCB_yield after waitForInterrupt at 281 " + javaThread.getName());
+	//////System.out.println("\nTCB_yield after waitForInterrupt at 281 " + javaThread.getName());
 	if (done) {
 	    currentTCB.interrupt();
-            System.out.println("\nTCB_yield at 284 " + currentTCB.javaThread.getName());
+            //////System.out.println("\nTCB_yield at 284 " + currentTCB.javaThread.getName());
 	    throw new ThreadDeath();
 	}
         
-        System.out.println("\nTCB_yield at 288 " + currentTCB.javaThread.getName());
+        //////System.out.println("\nTCB_yield at 288 " + currentTCB.javaThread.getName());
 	currentTCB = this;
-        System.out.println("\nTCB_yield at 290 " + currentTCB.javaThread.getName());
+        //////System.out.println("\nTCB_yield at 290 " + currentTCB.javaThread.getName());
     }
 
     /**
@@ -300,11 +300,11 @@ public final class TCB {
      * is updated by <tt>contextSwitch()</tt> before we get called.
      */
     private synchronized void waitForInterrupt() {
-        System.out.println("\n1st line of TCB_waitForInterrupt at 302 " + javaThread.getName());
-        System.out.println(javaThread.getName() + " in TCB_waitForInterrupt before while.");
+        //////System.out.println("\n1st line of TCB_waitForInterrupt at 302 " + javaThread.getName());
+        //////System.out.println(javaThread.getName() + " in TCB_waitForInterrupt before while.");
 	while (!running) {
 	    try { wait(); 
-                System.out.println("\nafter wait in TCB_waitForInterrupt at 306 " + javaThread.getName());
+                //////System.out.println("\nafter wait in TCB_waitForInterrupt at 306 " + javaThread.getName());
             }
 	    catch (InterruptedException e) { }
 	}
@@ -317,7 +317,7 @@ public final class TCB {
      * TCB.
      */
     private synchronized void interrupt() {
-        System.out.println("\nTCB_interrupt at 319 " + javaThread.getName());
+        //////System.out.println("\nTCB_interrupt at 319 " + javaThread.getName());
 	running = true;
 	notify();
     }

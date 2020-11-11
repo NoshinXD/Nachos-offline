@@ -88,13 +88,6 @@ public class Alarm {
     private class Pair {
         public KThread t;
         public long time;
-        
-        /*public int compareTo(Pair p2)
-        {
-            if(time > p2.time) return 1;
-            else if(time < p2.time) return -1;
-            else return 0;
-        }*/
     }
     
     Queue<Pair> sleepingQueue = new LinkedList<>();

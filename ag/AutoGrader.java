@@ -29,7 +29,7 @@ public class AutoGrader {
      * 				machine.
      */
     public void start(Privilege privilege) {
-        System.out.println("1st line of AutoGrader_start at 32.\n");
+        //////System.out.println("1st line of AutoGrader_start at 32.\n");
 	Lib.assertTrue(this.privilege == null,
 		   "start() called multiple times");
 	this.privilege = privilege;
@@ -150,13 +150,13 @@ public class AutoGrader {
     }
     
     void run() {
-        System.out.println("1st line of AutoGrader_run at 153.\n");
+        //////System.out.println("1st line of AutoGrader_run at 153.\n");
 	kernel.selfTest();
-        System.out.println("AutoGrader_run after kernel.selfTest at 155.\n");
+        //////System.out.println("AutoGrader_run after kernel.selfTest at 155.\n");
 	kernel.run();
-        System.out.println("AutoGrader_run after kernel.run at 157.\n");
+        //////System.out.println("AutoGrader_run after kernel.run at 157.\n");
 	kernel.terminate();
-        System.out.println("AutoGrader_run after kernel.terminate at 159.\n");
+        //////System.out.println("AutoGrader_run after kernel.terminate at 159.\n");
     }
 
     Privilege privilege = null;

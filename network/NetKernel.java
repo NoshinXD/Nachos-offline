@@ -41,7 +41,7 @@ public class NetKernel extends VMKernel {
 
 	serverThread.fork();
 
-	System.out.println("Press any key to start the network test...");
+	//////System.out.println("Press any key to start the network test...");
 	console.readByte(true);
 
 	int local = Machine.networkLink().getLinkAddress();
@@ -57,7 +57,7 @@ public class NetKernel extends VMKernel {
     private void ping(int dstLink) {
 	int srcLink = Machine.networkLink().getLinkAddress();
 	
-	System.out.println("PING " + dstLink + " from " + srcLink);
+	//////System.out.println("PING " + dstLink + " from " + srcLink);
 
 	long startTime = Machine.timer().getTime();
 	
@@ -79,7 +79,7 @@ public class NetKernel extends VMKernel {
 	
 	long endTime = Machine.timer().getTime();
 
-	System.out.println("time=" + (endTime-startTime) + " ticks");	
+	//////System.out.println("time=" + (endTime-startTime) + " ticks");	
     }
 
     private void pingServer() {

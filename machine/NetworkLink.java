@@ -99,8 +99,8 @@ public class NetworkLink {
 	}
 
 	if (socket == null) {
-	    System.out.println("");
-	    System.out.println("Unable to acquire a link address!");
+	    //////System.out.println("");
+	    //////System.out.println("Unable to acquire a link address!");
 	    Lib.assertNotReached();
 	}
 
