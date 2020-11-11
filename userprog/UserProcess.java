@@ -5,6 +5,7 @@ import nachos.threads.*;
 import nachos.userprog.*;
 
 import java.io.EOFException;
+import java.util.ArrayList;
 
 /**
  * Encapsulates the state of a user process that is not contained in its
@@ -27,6 +28,22 @@ public class UserProcess {
 	pageTable = new TranslationEntry[numPhysPages];
 	for (int i=0; i<numPhysPages; i++)
 	    pageTable[i] = new TranslationEntry(i,i, true,false,false,false);
+        
+        boolean s = Machine.interrupt().disable();
+      
+        staticLock.acquire();
+        
+        
+        processId = totalProcess++;
+        staticLock.release();
+        files = new OpenFile[TOTALFILESIZE];
+        files[0] = UserKernel.console.openForReading();
+        files[1] = UserKernel.console.openForWriting();
+        Machine.interrupt().restore(s);
+        parent = null;
+        child = new ArrayList<>();
+        childStatus = new ArrayList<>();
+        
     }
     
     /**
@@ -340,12 +357,78 @@ public class UserProcess {
      */
     private int handleHalt() {
 
+        
+        if(processId!=0){
+            return -1;
+        }
 	Machine.halt();
 	
 	Lib.assertNotReached("Machine.halt() did not halt machine!");
 	return 0;
     }
+    
+    private int handleRead(int fileDescriptor,int virtualAddr,int size){
+        
+        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0){
+            return -1;
+            
+        }
+        
+        byte[] buf = new byte[size];
+        int totalRead = 0;
+        if(fileDescriptor<2){
+            totalRead = files[fileDescriptor].read(buf, 0, size);
+            
+        }
+        if(totalRead== -1){
+            return -1;
+        }
+        
+        byte[] memory = Machine.processor().getMemory();
+        totalRead = Math.min(totalRead,memory.length-virtualAddr);
+        if(totalRead<=0){
+            return -1;
+        }
+        for(int i =0;i<totalRead;i++){
+            memory[virtualAddr+i]= buf[i];
+        }
+        
+        return totalRead;
 
+        
+    }
+    
+    
+    
+    private int handleWrite(int fileDescriptor,int virtualAddr,int size){
+        
+        System.out.println("inside handle writeqqqqq"
+                + "");
+        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0){
+            return -1;
+            
+        }
+        
+        byte[] buf = new byte[size];
+        byte[] memory = Machine.processor().getMemory();
+        int totalRead =0;
+        for(int i = 0;i<size;i++){
+            if((virtualAddr+i) >= memory.length)
+                break;
+            buf[i] = memory[virtualAddr+i];
+            totalRead++;
+        }
+        
+        int totalWrite = 0;
+        if(fileDescriptor<2){
+            totalWrite = files[fileDescriptor].write(buf, 0, totalRead);
+            
+        }
+        
+        System.out.println("returning from write"+ totalWrite);
+        return totalWrite;
+    }
+    
 
     private static final int
         syscallHalt = 0,
@@ -391,7 +474,12 @@ public class UserProcess {
 	switch (syscall) {
 	case syscallHalt:
 	    return handleHalt();
-
+            
+        case syscallRead:
+	    return handleRead(a0,a1,a2);
+        
+         case syscallWrite:
+	    return handleWrite(a0,a1,a2);
 
 	default:
 	    Lib.debug(dbgProcess, "Unknown syscall " + syscall);
@@ -446,4 +534,15 @@ public class UserProcess {
 	
     private static final int pageSize = Processor.pageSize;
     private static final char dbgProcess = 'a';
+    // our defined datastructure
+    
+    private  static Lock staticLock = new Lock();
+    private static int totalProcess = 0;
+    private static final int TOTALFILESIZE=10;
+    private int processId;
+        
+    private OpenFile[] files;
+    private UserProcess parent;
+    private ArrayList<UserProcess> child ;
+    private ArrayList<Integer> childStatus;
 }
