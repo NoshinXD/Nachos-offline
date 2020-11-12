@@ -466,7 +466,11 @@ public class UserProcess {
     
     private int handleRead(int fileDescriptor,int virtualAddr,int size){
         
+<<<<<<< HEAD
         if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr<0){
+=======
+        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr < 0){
+>>>>>>> c4f03e4d82f71793e470862d62284804ad0ffa23
             return -1;
             
         }
@@ -499,9 +503,15 @@ public class UserProcess {
     
     private int handleWrite(int fileDescriptor,int virtualAddr,int size){
         
+<<<<<<< HEAD
         //System.out.println("inside handle writeqqqqq"
                 //+ "");
         if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr<0){
+=======
+        System.out.println("inside handle writeqqqqq"
+                + "");
+        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr < 0){
+>>>>>>> c4f03e4d82f71793e470862d62284804ad0ffa23
             return -1;
             
         }
