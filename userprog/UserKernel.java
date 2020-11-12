@@ -1,5 +1,6 @@
 package nachos.userprog;
 
+import java.util.LinkedList;
 import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
@@ -19,14 +20,22 @@ public class UserKernel extends ThreadedKernel {
      * Initialize this kernel. Creates a synchronized console and sets the
      * processor's exception handler.
      */
+    //public static Lock pageSychLock;
+    //private static LinkedList<Integer> pagetable = new LinkedList<>();
+    
     public void initialize(String[] args) {
 	super.initialize(args);
+       // pageSychLock = new Lock();
 
 	console = new SynchConsole(Machine.console());
 	
 	Machine.processor().setExceptionHandler(new Runnable() {
 		public void run() { exceptionHandler(); }
 	    });
+        
+        for(int i=0;i<Machine.processor().getNumPhysPages();i++){
+            pagetable.add(i);
+        }
     }
 
     /**
@@ -106,10 +115,35 @@ public class UserKernel extends ThreadedKernel {
     public void terminate() {
 	super.terminate();
     }
-
+    
+    synchronized public static int allocatePage(){
+        int returnPage = -1;
+        
+        //boolean s = Machine.interrupt().disable();
+        //pageSychLock.acquire();
+        if(!pagetable.isEmpty()){
+            returnPage = pagetable.removeFirst();
+        }
+        //pageSychLock.release();
+        //Machine.interrupt().restore(s);
+        
+        return returnPage;
+        
+    }
+    
+    synchronized public static void reclaimPage(int pagenumber){
+        
+       // pageSychLock.acquire();
+        pagetable.add(pagenumber);
+       // pageSychLock.release();
+        
+    }
     /** Globally accessible reference to the synchronized console. */
     public static SynchConsole console;
 
     // dummy variables to make javac smarter
     private static Coff dummy1 = null;
+    private static LinkedList<Integer> pagetable = new LinkedList<>();
+    //private static Lock pageSychLock = new Lock();
+    
 }

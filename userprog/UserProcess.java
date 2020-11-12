@@ -32,8 +32,6 @@ public class UserProcess {
         boolean s = Machine.interrupt().disable();
       
         staticLock.acquire();
-        
-        
         processId = totalProcess++;
         staticLock.release();
         files = new OpenFile[TOTALFILESIZE];
@@ -146,18 +144,60 @@ public class UserProcess {
      */
     public int readVirtualMemory(int vaddr, byte[] data, int offset,
 				 int length) {
-	Lib.assertTrue(offset >= 0 && length >= 0 && offset+length <= data.length);
+	Lib.assertTrue(offset >= 0 && length > 0 && offset+length <=data.length);
+        int totalread = 0;
+        int endVaddr = vaddr+ length - 1;
+        
+        byte[] memory = Machine.processor().getMemory();
+        
+        if(vaddr<0 || endVaddr>= memory.length){
+            return 0;
+        }
+        
+        int firstVPN = Machine.processor().pageFromAddress(vaddr);
+        int lastVPN = Machine.processor().pageFromAddress(endVaddr);
+        
+        for(int i=firstVPN; i<=lastVPN; i++){
+            if(pageTable[i] == null || pageTable[i].valid == false){
+                return 0;
+            }
+            
+//            int physicalAddr = pageTable[i].ppn;
+//            int end
 
-	byte[] memory = Machine.processor().getMemory();
-	
-	// for now, just assume that virtual addresses equal physical addresses
-	if (vaddr < 0 || vaddr >= memory.length)
-	    return 0;
+//            
+           int pageStart = Machine.processor().makeAddress(i, 0);
+           int pageEnd = Machine.processor().makeAddress(i, pageSize-1);
+           int readSize = 0;
+           
+           if(endVaddr > pageEnd){
+               readSize = pageEnd - vaddr+1;
+           }
+           
+           else{
+               readSize = endVaddr - vaddr +1;
+           }
+           
+           int readOffset = vaddr - pageStart;
+           int physicalStartAddr = Machine.processor().makeAddress(pageTable[i].ppn, readOffset);
+           
+           for(int j = 0;j<readSize;j++){
+               data[offset+j]= memory[physicalStartAddr+j];
+           }
+           
+           totalread = totalread+readSize;
+           vaddr = vaddr+readSize;
+           
+        }
 
-	int amount = Math.min(length, memory.length-vaddr);
-	System.arraycopy(memory, vaddr, data, offset, amount);
+//	if (vaddr < 0 || vaddr >= memory.length)
+//	    return 0;
 
-	return amount;
+	//int amount = Math.min(length, memory.length-vaddr);
+	//System.arraycopy(memory, vaddr, data, offset, amount);
+
+	//return amount;
+        return totalread;
     }
 
     /**
@@ -189,18 +229,75 @@ public class UserProcess {
      */
     public int writeVirtualMemory(int vaddr, byte[] data, int offset,
 				  int length) {
-	Lib.assertTrue(offset >= 0 && length >= 0 && offset+length <= data.length);
+        
+        
+        Lib.assertTrue(offset >= 0 && length > 0 && offset+length <=data.length);
+        int totalwrite = 0;
+        int endVaddr = vaddr+ length - 1;
+        
+        byte[] memory = Machine.processor().getMemory();
+        
+        if(vaddr<0 || endVaddr>= memory.length){
+            return 0;
+        }
+        
+        int firstVPN = Machine.processor().pageFromAddress(vaddr);
+        int lastVPN = Machine.processor().pageFromAddress(endVaddr);
+        
+        for(int i=firstVPN; i<=lastVPN; i++){
+            if(pageTable[i] == null || pageTable[i].valid == false){
+                return 0;
+            }
+            
+//            int physicalAddr = pageTable[i].ppn;
+//            int end
 
-	byte[] memory = Machine.processor().getMemory();
-	
-	// for now, just assume that virtual addresses equal physical addresses
-	if (vaddr < 0 || vaddr >= memory.length)
-	    return 0;
+//            
+           int pageStart = Machine.processor().makeAddress(i, 0);
+           int pageEnd = Machine.processor().makeAddress(i, pageSize-1);
+           int writeSize = 0;
+           
+           if(endVaddr > pageEnd){
+               writeSize = pageEnd - vaddr+1;
+           }
+           
+           else{
+               writeSize = endVaddr - vaddr +1;
+           }
+           
+           int writeOffset = vaddr - pageStart;
+           int physicalStartAddr = Machine.processor().makeAddress(pageTable[i].ppn, writeOffset);
+           
+           for(int j = 0;j<writeSize;j++){
+               memory[physicalStartAddr+j]= data[offset+j];
+           }
+           
+           totalwrite = totalwrite+writeSize;
+           vaddr = vaddr+writeSize;
+           
+        }
+        return totalwrite;
 
-	int amount = Math.min(length, memory.length-vaddr);
-	System.arraycopy(data, offset, memory, vaddr, amount);
+//	if (vaddr < 0 || vaddr >= memory.length)
+//	    return 0;
 
-	return amount;
+	//int amount = Math.min(length, memory.length-vaddr);
+	//System.arraycopy(memory, vaddr, data, offset, amount);
+
+	//return amount;
+       
+//	Lib.assertTrue(offset >= 0 && length >= 0 && offset+length <= data.length);
+//
+//	byte[] memory = Machine.processor().getMemory();
+//	
+//	// for now, just assume that virtual addresses equal physical addresses
+//	if (vaddr < 0 || vaddr >= memory.length)
+//	    return 0;
+//
+//	int amount = Math.min(length, memory.length-vaddr);
+//	System.arraycopy(data, offset, memory, vaddr, amount);
+//
+//	return amount;
     }
 
     /**
@@ -369,7 +466,7 @@ public class UserProcess {
     
     private int handleRead(int fileDescriptor,int virtualAddr,int size){
         
-        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0){
+        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr<0){
             return -1;
             
         }
@@ -402,9 +499,9 @@ public class UserProcess {
     
     private int handleWrite(int fileDescriptor,int virtualAddr,int size){
         
-        System.out.println("inside handle writeqqqqq"
-                + "");
-        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0){
+        //System.out.println("inside handle writeqqqqq"
+                //+ "");
+        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr<0){
             return -1;
             
         }
@@ -425,7 +522,7 @@ public class UserProcess {
             
         }
         
-        System.out.println("returning from write"+ totalWrite);
+        //System.out.println("returning from write"+ totalWrite);
         return totalWrite;
     }
     
