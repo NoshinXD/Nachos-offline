@@ -19,9 +19,9 @@ public class Communicator {
          conditionVariablelock = new Lock();
          speakerVariable = new Condition2((conditionVariablelock));
          listenerVariable = new Condition2((conditionVariablelock));
-         sleepingListenerCount = 0;
-         sleepingSpeakerCount = 0;
-         DataVariable = 0;
+//         sleepingListenerCount = 0;
+//         sleepingSpeakerCount = 0;
+         dataVariable = 0;
         
     }
 
@@ -36,26 +36,42 @@ public class Communicator {
      * @param	word	the integer to transfer.
      */
     public void speak(int word) {
+//        conditionVariablelock.acquire();
+//
+//        if(sleepingListenerCount>0 done==true){
+//            listenerVariable.wake();
+//            DataVariable = word;
+//            sleepingListenerCount--;
+//        }
+//
+//        else{
+//            sleepingSpeakerCount++;
+//            speakerVariable.sleep();
+//            DataVariable = word;
+//            listenerVariable.wake();
+//            sleepingListenerCount--;
+//
+//        }
+//
+//
+//
+//        conditionVariablelock.release();
+
         conditionVariablelock.acquire();
-        
-        if(sleepingListenerCount>0){
-            listenerVariable.wake();
-            DataVariable = word;
-            sleepingListenerCount--;
-        }
-        
-        else{
-            sleepingSpeakerCount++;
+        while(room1==true)
+        {
             speakerVariable.sleep();
-            DataVariable = word;
-            listenerVariable.wake();
-            sleepingListenerCount--;
-            
         }
-        
-        
-        
+        room1 = true;
+        room2 = false;
+        dataVariable = word;
+        listenerVariable.wakeAll();
+        speakerVariable.sleep();
+        room1=false;
         conditionVariablelock.release();
+
+
+
         
     }
 
@@ -68,37 +84,53 @@ public class Communicator {
     
     
     public int listen() {
+//        int ret = 0;
+//        conditionVariablelock.acquire();
+//
+//        if(sleepingSpeakerCount>0){
+//            speakerVariable.wake();
+//            sleepingListenerCount++;
+//            listenerVariable.sleep();
+//            ret = DataVariable;
+//
+//
+//
+//        }
+//        else{
+//            sleepingListenerCount++;
+//            listenerVariable.sleep();
+//            ret = DataVariable;
+//
+//        }
+//
+//        conditionVariablelock.release();
         int ret = 0;
+
         conditionVariablelock.acquire();
-        
-        if(sleepingSpeakerCount>0){
-            speakerVariable.wake();
-            sleepingListenerCount++;
+        while(room2==true)
+        {
             listenerVariable.sleep();
-            ret = DataVariable;
-            
-            
-            
         }
-        else{
-            sleepingListenerCount++;
-            listenerVariable.sleep();
-            ret = DataVariable;
-            
-        }
-        
+        room2 = true;
+        ret = dataVariable;
+        speakerVariable.wakeAll();
         conditionVariablelock.release();
-        
-        
-	return ret;
+
+	    return ret;
     }
     
      private Lock conditionVariablelock;
      private Condition2 speakerVariable;
      private Condition2 listenerVariable;
-     private int DataVariable;
-     private int sleepingSpeakerCount;
-     private int sleepingListenerCount;
+     private static int dataVariable;
+//     private static int sleepingSpeakerCount;
+//     private static int sleepingListenerCount;
+//     private static boolean done = false;
+//     private static boolean valid = false;
+    private static boolean room1 = false;
+    private static boolean room2 = true;
+//    private static int  status = 0;
+
      
      
 }
