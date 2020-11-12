@@ -299,6 +299,54 @@ public class UserProcess {
 //
 //	return amount;
     }
+    
+    private boolean allocate(int startingVPN, int totalPage, boolean readOnly)
+    {
+        ArrayList<TranslationEntry> pages = new ArrayList<>();
+        
+        for(int i=0; i<totalPage; i++)
+        {
+            if(startingVPN + i >= pageTable.length)
+            {
+                return false;
+            }
+            
+            int ppn = UserKernel.allocatePage();
+            if(ppn == -1)
+            {
+                for(int j=0; j<pages.size(); j++)
+                {
+                    numPages--;
+                    TranslationEntry t = pages.get(j);
+                    pageTable[t.vpn] = new TranslationEntry(t.vpn, 0, false, false, false, false);
+                    UserKernel.reclaimPage(t.ppn);
+                    
+                }
+                return false;
+            }
+            
+            TranslationEntry newEntry = new TranslationEntry(startingVPN + i, ppn, true, readOnly, false, false);
+            pages.add(newEntry);
+            pageTable[startingVPN + i] = newEntry;
+            numPages++;
+        }
+        return true;
+    }
+    
+    private void returnAllPages()
+    {
+        for(int i=0; i<pageTable.length; i++)
+        {
+            if(pageTable[i].valid)
+            {
+                TranslationEntry t = pageTable[i];
+                pageTable[t.vpn] = new TranslationEntry(t.vpn, 0, false, false, false, false);
+                    
+                UserKernel.reclaimPage(pageTable[i].ppn);
+            }
+        }
+    }
+    
 
     /**
      * Load the executable with the specified name into this process, and
@@ -337,7 +385,15 @@ public class UserProcess {
 		Lib.debug(dbgProcess, "\tfragmented executable");
 		return false;
 	    }
-	    numPages += section.getLength();
+	    //numPages += section.getLength();
+            boolean allocated = allocate(numPages, section.getLength(), section.isReadOnly());
+            if(!allocated)
+            {
+                returnAllPages();
+                numPages = 0;
+                return false;
+            }
+            
 	}
 
 	// make sure the argv array will fit in one page
@@ -354,6 +410,7 @@ public class UserProcess {
 	    return false;
 	}
 
+        
 	// program counter initially points at the program entry point
 	initialPC = coff.getEntryPoint();	
 
@@ -362,7 +419,16 @@ public class UserProcess {
 	initialSP = numPages*pageSize;
 
 	// and finally reserve 1 page for arguments
-	numPages++;
+	//numPages++;
+        boolean allocatedArg = allocate(numPages, 1, false);
+        
+        if(!allocatedArg)
+        {
+            returnAllPages();
+            numPages = 0;
+            return false;
+        }
+        
 
 	if (!loadSections())
 	    return false;
@@ -424,6 +490,17 @@ public class UserProcess {
      * Release any resources allocated by <tt>loadSections()</tt>.
      */
     protected void unloadSections() {
+        returnAllPages();
+        numPages = 0;
+        coff.close();
+        for(int i=0; i<files.length; i++)
+        {
+            if(files[i] != null)
+            {
+                files[i].close();
+                files[i] = null;
+            }
+        }
     }    
 
     /**
@@ -466,18 +543,14 @@ public class UserProcess {
     
     private int handleRead(int fileDescriptor,int virtualAddr,int size){
         
-<<<<<<< HEAD
         if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr<0){
-=======
-        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr < 0){
->>>>>>> c4f03e4d82f71793e470862d62284804ad0ffa23
             return -1;
             
         }
         
         byte[] buf = new byte[size];
         int totalRead = 0;
-        if(fileDescriptor<2){
+        if(fileDescriptor == 0){
             totalRead = files[fileDescriptor].read(buf, 0, size);
             
         }
@@ -503,15 +576,9 @@ public class UserProcess {
     
     private int handleWrite(int fileDescriptor,int virtualAddr,int size){
         
-<<<<<<< HEAD
         //System.out.println("inside handle writeqqqqq"
                 //+ "");
         if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr<0){
-=======
-        System.out.println("inside handle writeqqqqq"
-                + "");
-        if(fileDescriptor<0||fileDescriptor>=TOTALFILESIZE||files[fileDescriptor]==null||size<0 || virtualAddr < 0){
->>>>>>> c4f03e4d82f71793e470862d62284804ad0ffa23
             return -1;
             
         }
@@ -527,7 +594,7 @@ public class UserProcess {
         }
         
         int totalWrite = 0;
-        if(fileDescriptor<2){
+        if(fileDescriptor == 1){
             totalWrite = files[fileDescriptor].write(buf, 0, totalRead);
             
         }
@@ -535,6 +602,7 @@ public class UserProcess {
         //System.out.println("returning from write"+ totalWrite);
         return totalWrite;
     }
+    
     
 
     private static final int
