@@ -39,9 +39,10 @@ public class UserProcess {
         files[0] = UserKernel.console.openForReading();
         files[1] = UserKernel.console.openForWriting();
         Machine.interrupt().restore(s);
-        parent = null;
         child = new ArrayList<>();
         childStatus = new ArrayList<>();
+        parent = null;
+        
         
     }
     
@@ -150,13 +151,15 @@ public class UserProcess {
      */
     public int readVirtualMemory(int vaddr, byte[] data, int offset,
 				 int length) {
-	Lib.assertTrue(offset >= 0 && length > 0 && offset+length <=data.length);
+	Lib.assertTrue(offset >= 0 && length >= 0 && offset+length <=data.length);
         int totalread = 0;
         int endVaddr = vaddr+ length - 1;
         
         byte[] memory = Machine.processor().getMemory();
+
+        int lastAllowableAddress = Machine.processor().makeAddress(numPages - 1, pageSize - 1);
         
-        if(vaddr<0 || endVaddr>= memory.length){
+        if(vaddr<0 || endVaddr>lastAllowableAddress || endVaddr<vaddr || numPages == 0){
             return 0;
         }
         
@@ -164,8 +167,8 @@ public class UserProcess {
         int lastVPN = Machine.processor().pageFromAddress(endVaddr);
         
         for(int i=firstVPN; i<=lastVPN; i++){
-            if(pageTable[i] == null || pageTable[i].valid == false){
-                return 0;
+            if( i<0 || i > pageTable.length || pageTable[i] == null || pageTable[i].valid == false){
+                break;
             }
             
 //            int physicalAddr = pageTable[i].ppn;
@@ -236,18 +239,20 @@ public class UserProcess {
     public int writeVirtualMemory(int vaddr, byte[] data, int offset,
 				  int length) {
         
-        System.out.println("offset: " + offset);
-        System.out.println("length: " + length);
-        System.out.println("offset+length: " + (offset+length));
-        System.out.println("data.length: " + data.length);
+        // System.out.println("offset: " + offset);
+        // System.out.println("length: " + length);
+        // System.out.println("offset+length: " + (offset+length));
+        // System.out.println("data.length: " + data.length);
         
         Lib.assertTrue(offset >= 0 && length >= 0 && offset+length <=data.length);
         int totalwrite = 0;
         int endVaddr = vaddr+ length - 1;
         
         byte[] memory = Machine.processor().getMemory();
+
+        int allowableLastAddress = Machine.processor().makeAddress(numPages - 1, pageSize - 1);
         
-        if(vaddr<0 || endVaddr>= memory.length || endVaddr < vaddr){
+        if(vaddr<0 || endVaddr>allowableLastAddress || endVaddr < vaddr || numPages >= pageTable.length){
             return 0;
         }
         
@@ -255,8 +260,8 @@ public class UserProcess {
         int lastVPN = Machine.processor().pageFromAddress(endVaddr);
         
         for(int i=firstVPN; i<=lastVPN; i++){
-            if(pageTable[i] == null || pageTable[i].valid == false){
-                return 0;
+            if(i<0 || i> pageTable.length ||  pageTable[i] == null || pageTable[i].readOnly || pageTable[i].valid == false){
+                break;
             }
             
 //            int physicalAddr = pageTable[i].ppn;
@@ -347,12 +352,13 @@ public class UserProcess {
     {
         for(int i=0; i<pageTable.length; i++)
         {
-            if(pageTable[i].valid)
+            TranslationEntry t = pageTable[i];
+            if(t.valid)
             {
-                TranslationEntry t = pageTable[i];
+                UserKernel.reclaimPage(t.ppn);
                 pageTable[t.vpn] = new TranslationEntry(t.vpn, 0, false, false, false, false);
                     
-                UserKernel.reclaimPage(pageTable[i].ppn);
+                
             }
         }
     }
@@ -450,7 +456,7 @@ public class UserProcess {
         }
         
 
-	if (!loadSections())
+        if (!loadSections())
 	    return false;
 
 	// store arguments in last page
@@ -498,10 +504,16 @@ public class UserProcess {
 	    for (int i=0; i<section.getLength(); i++) {
 		int vpn = section.getFirstVPN()+i;
             TranslationEntry entry = pageTable[vpn];
-            
 
-		// for now, just assume virtual addresses=physical addresses
-		section.loadPage(i, vpn);
+            if(entry==null || entry.valid== false )
+            {
+                return false;
+            }
+
+
+
+            // for now, just assume virtual addresses=physical addresses
+		    section.loadPage(i, entry.ppn);
 	    }
 	}
 	
@@ -514,7 +526,7 @@ public class UserProcess {
     protected void unloadSections() {
         returnAllPages();
         numPages = 0;
-        coff.close();
+
         for(int i=0; i<files.length; i++)
         {
             if(files[i] != null)
@@ -523,6 +535,9 @@ public class UserProcess {
                 files[i] = null;
             }
         }
+
+        coff.close();
+        
     }    
 
     /**
@@ -580,16 +595,18 @@ public class UserProcess {
             return -1;
         }
         
-        byte[] memory = Machine.processor().getMemory();
-        totalRead = Math.min(totalRead,memory.length-virtualAddr);
-        if(totalRead<=0){
-            return -1;
-        }
-        for(int i =0;i<totalRead;i++){
-            memory[virtualAddr+i]= buf[i];
-        }
+
+        int written = writeVirtualMemory(virtualAddr,buf,0,totalRead);
         
-        return totalRead;
+        // totalRead = Math.min(totalRead,memory.length-virtualAddr);
+        // if(totalRead<=0){
+        //     return -1;
+        // }
+        // for(int i =0;i<totalRead;i++){
+        //     memory[virtualAddr+i]= buf[i];
+        // }
+        
+        return written;
 
         
     }
@@ -686,13 +703,13 @@ public class UserProcess {
         
         UserProcess joinChild = null;
         
-        int joinChildIndex = -1;
+        // int joinChildIndex = -1; // doing this thing later
         
         for(int i=0; i<child.size(); i++)
         {
             if(child.get(i).processId == processID)
             {
-                joinChildIndex = i;
+                // joinChildIndex = i;
                 joinChild = child.get(i);
                 break;
             }
@@ -704,8 +721,23 @@ public class UserProcess {
         }
         
         joinChild.myThread.join();
+        joinChild.parent = null;
         
         parentAccessLock.acquire();
+         
+        int joinChildIndex = -1; // doing this here
+        
+         for(int i=0; i<child.size(); i++)
+         {
+             if(child.get(i).processId == processID)
+             {
+                  joinChildIndex = i;
+                 //joinChild = child.get(i);
+                 break;
+             }
+         }
+        
+
         
         Integer joinChildStatus = childStatus.get(joinChildIndex); 
         childStatus.remove(joinChildIndex);
@@ -736,14 +768,12 @@ public class UserProcess {
     
     private int handleExit(int exitStatus)
     {
-        unloadSections();
         
-        for(UserProcess c: child)
-        {
-            c.parent = null;
-            
-        }
         
+        
+
+        
+        System.out.println(" ekhane error thakte pare");
         if(parent != null)
         {
             parentAccessLock.acquire();
@@ -764,7 +794,15 @@ public class UserProcess {
             
             parentAccessLock.release();
         }
+
+        unloadSections();
         
+        for(UserProcess c: child)
+        {
+            c.parent = null;
+            
+        }
+
         staticLock.acquire();
         currentlyRunning--;
         staticLock.release();
