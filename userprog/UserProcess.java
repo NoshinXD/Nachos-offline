@@ -27,7 +27,7 @@ public class UserProcess {
 	int numPhysPages = Machine.processor().getNumPhysPages();
 	pageTable = new TranslationEntry[numPhysPages];
 	for (int i=0; i<numPhysPages; i++)
-	    pageTable[i] = new TranslationEntry(i,i, true,false,false,false);
+	    pageTable[i] = new TranslationEntry(i,0, false,false,false,false);
         
         boolean s = Machine.interrupt().disable();
       
@@ -425,8 +425,18 @@ public class UserProcess {
 	initialPC = coff.getEntryPoint();	
 
 	// next comes the stack; stack pointer initially points to top of it
-	numPages += stackPages;
-	initialSP = numPages*pageSize;
+	boolean stackAllocated = allocate(numPages,stackPages,false);
+        if(!stackAllocated)
+        {
+            returnAllPages();
+            numPages = 0;
+            return false;
+        }
+
+
+
+
+	initialSP = (numPages*pageSize);
 
 	// and finally reserve 1 page for arguments
 	//numPages++;
@@ -487,6 +497,8 @@ public class UserProcess {
 
 	    for (int i=0; i<section.getLength(); i++) {
 		int vpn = section.getFirstVPN()+i;
+            TranslationEntry entry = pageTable[vpn];
+            
 
 		// for now, just assume virtual addresses=physical addresses
 		section.loadPage(i, vpn);
@@ -594,15 +606,15 @@ public class UserProcess {
         }
         
         byte[] buf = new byte[size];
-        byte[] memory = Machine.processor().getMemory();
-        int totalRead =0;
-        for(int i = 0;i<size;i++){
-            if((virtualAddr+i) >= memory.length)
-                break;
-            buf[i] = memory[virtualAddr+i];
-            totalRead++;
-        }
-        
+        //byte[] memory = Machine.processor().getMemory();
+        int totalRead = readVirtualMemory(virtualAddr,buf,0,size);
+//        for(int i = 0;i<size;i++){
+//            if((virtualAddr+i) >= memory.length)
+//                break;
+//            buf[i] = memory[virtualAddr+i];
+//            totalRead++;
+//        }
+//
         int totalWrite = 0;
         if(fileDescriptor==1){
             totalWrite = files[fileDescriptor].write(buf, 0, totalRead);
@@ -860,6 +872,8 @@ public class UserProcess {
 	    break;				       
 				       
 	default:
+        System.out.println("Unexpected exception: " +
+                Processor.exceptionNames[cause]);
 	    Lib.debug(dbgProcess, "Unexpected exception: " +
 		      Processor.exceptionNames[cause]);
 	    Lib.assertNotReached("Unexpected exception");
