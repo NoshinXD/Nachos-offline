@@ -6,6 +6,8 @@ import nachos.userprog.*;
 
 import java.io.EOFException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Encapsulates the state of a user process that is not contained in its
@@ -39,8 +41,8 @@ public class UserProcess {
         files[0] = UserKernel.console.openForReading();
         files[1] = UserKernel.console.openForWriting();
         Machine.interrupt().restore(s);
-        child = new ArrayList<>();
-        childStatus = new ArrayList<>();
+        child = new LinkedList<>();
+        childStatus = new HashMap<>();
         parent = null;
         
         
@@ -704,16 +706,26 @@ public class UserProcess {
         UserProcess joinChild = null;
         
         // int joinChildIndex = -1; // doing this thing later
-        
-        for(int i=0; i<child.size(); i++)
+
+
+        for (UserProcess c: child)
         {
-            if(child.get(i).processId == processID)
+            if(c.processId== processID)
             {
-                // joinChildIndex = i;
-                joinChild = child.get(i);
+                joinChild = c;
                 break;
             }
         }
+        
+//        for(int i=0; i<child.size(); i++)
+//        {
+//            if(child.get(i).processId == processID)
+//            {
+//                // joinChildIndex = i;
+//                joinChild = child.get(i);
+//                break;
+//            }
+//        }
         
         if(joinChild == null)
         {
@@ -725,23 +737,14 @@ public class UserProcess {
         
         parentAccessLock.acquire();
          
-        int joinChildIndex = -1; // doing this here
-        
-         for(int i=0; i<child.size(); i++)
-         {
-             if(child.get(i).processId == processID)
-             {
-                  joinChildIndex = i;
-                 //joinChild = child.get(i);
-                 break;
-             }
-         }
+         // doing this here
         
 
         
-        Integer joinChildStatus = childStatus.get(joinChildIndex); 
-        childStatus.remove(joinChildIndex);
-        child.remove(joinChildIndex);
+
+        
+        Integer joinChildStatus = childStatus.get(joinChild.processId);
+        child.remove(joinChild);
         
         parentAccessLock.release();
         
@@ -777,20 +780,7 @@ public class UserProcess {
         if(parent != null)
         {
             parentAccessLock.acquire();
-            int index = -1;
-            for(int i=0; i<parent.child.size(); i++)
-            {
-                if(parent.child.get(i).processId == processId)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            
-            if(index != -1)
-            {
-                parent.childStatus.set(index, exitStatus);
-            }
+            parent.childStatus.put(processId,exitStatus);
             
             parentAccessLock.release();
         }
@@ -806,7 +796,8 @@ public class UserProcess {
         staticLock.acquire();
         currentlyRunning--;
         staticLock.release();
-        
+        System.out.println("currentlyRunning: "+currentlyRunning);
+//        UThread.finish();
         if(currentlyRunning == 0)
         {
             Kernel.kernel.terminate();
@@ -947,7 +938,7 @@ public class UserProcess {
         
     private OpenFile[] files;
     private UserProcess parent;
-    private ArrayList<UserProcess> child ;
-    private ArrayList<Integer> childStatus;
+    private LinkedList<UserProcess> child ;
+    private HashMap<Integer,Integer> childStatus;
     private UThread myThread;
 }
