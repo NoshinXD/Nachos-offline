@@ -34,6 +34,7 @@ public class UserProcess {
         staticLock.acquire();
         processId = totalProcess++;
         staticLock.release();
+        
         files = new OpenFile[TOTALFILESIZE];
         files[0] = UserKernel.console.openForReading();
         files[1] = UserKernel.console.openForWriting();
@@ -67,7 +68,12 @@ public class UserProcess {
 	if (!load(name, args))
 	    return false;
 	
-	new UThread(this).setName(name).fork();
+        staticLock.acquire();
+        currentlyRunning++;
+        staticLock.release();
+        
+	myThread = (UThread) new UThread(this).setName(name);
+        myThread.fork();
 
 	return true;
     }
@@ -230,14 +236,18 @@ public class UserProcess {
     public int writeVirtualMemory(int vaddr, byte[] data, int offset,
 				  int length) {
         
+        System.out.println("offset: " + offset);
+        System.out.println("length: " + length);
+        System.out.println("offset+length: " + (offset+length));
+        System.out.println("data.length: " + data.length);
         
-        Lib.assertTrue(offset >= 0 && length > 0 && offset+length <=data.length);
+        Lib.assertTrue(offset >= 0 && length >= 0 && offset+length <=data.length);
         int totalwrite = 0;
         int endVaddr = vaddr+ length - 1;
         
         byte[] memory = Machine.processor().getMemory();
         
-        if(vaddr<0 || endVaddr>= memory.length){
+        if(vaddr<0 || endVaddr>= memory.length || endVaddr < vaddr){
             return 0;
         }
         
@@ -550,7 +560,7 @@ public class UserProcess {
         
         byte[] buf = new byte[size];
         int totalRead = 0;
-        if(fileDescriptor == 0){
+        if(fileDescriptor==0){
             totalRead = files[fileDescriptor].read(buf, 0, size);
             
         }
@@ -594,7 +604,7 @@ public class UserProcess {
         }
         
         int totalWrite = 0;
-        if(fileDescriptor == 1){
+        if(fileDescriptor==1){
             totalWrite = files[fileDescriptor].write(buf, 0, totalRead);
             
         }
@@ -603,7 +613,161 @@ public class UserProcess {
         return totalWrite;
     }
     
+    private int handleExec(int fileVaddr, int argLength, int argVaddr)
+    {
+        int MAX_STRSIZE = 256;
+        int lastVaddr = (pageTable.length * pageSize) - 1;
+        
+        if(fileVaddr < 0 || fileVaddr > lastVaddr || argVaddr < 0 || argVaddr > lastVaddr || argLength < 0)
+        {
+            return -1;
+        }
+        
+        String fileName = readVirtualMemoryString(fileVaddr, MAX_STRSIZE);
+        
+        if(fileName == null || !fileName.contains(".coff"))
+        {
+            return -1;
+        }
+        
+        String[] args = new String[argLength];
+        
+        for(int i=0; i<argLength; i++)
+        {
+            byte[] buf = new byte[4];
+            int jumpOffset = i * 4;
+            int readSize = readVirtualMemory(argVaddr + jumpOffset, buf);
+            if(readSize != 4)
+            {
+                return -1;
+            }
+            int vAddrToRead = Lib.bytesToInt(buf, 0);
+            String argument = readVirtualMemoryString(vAddrToRead, MAX_STRSIZE);
+            
+            if(argument == null)
+            {
+                return -1;
+            }
+            args[i] = argument;
+        }
+        
+        UserProcess childProcess = UserProcess.newUserProcess();
+        
+        boolean executed = childProcess.execute(fileName, args);
+        
+        if(!executed)
+        {
+            return -1;
+        }
+        
+        child.add(childProcess);
+        childProcess.parent = this;
+        return childProcess.processId;
+    }
     
+    private int handleJoin(int processID, int statVaddr)
+    {
+        if(processID < 0 || statVaddr < 0 || statVaddr >= (pageTable.length * pageSize))
+        {
+            return -1;
+        }
+        
+        UserProcess joinChild = null;
+        
+        int joinChildIndex = -1;
+        
+        for(int i=0; i<child.size(); i++)
+        {
+            if(child.get(i).processId == processID)
+            {
+                joinChildIndex = i;
+                joinChild = child.get(i);
+                break;
+            }
+        }
+        
+        if(joinChild == null)
+        {
+            return -1;
+        }
+        
+        joinChild.myThread.join();
+        
+        parentAccessLock.acquire();
+        
+        Integer joinChildStatus = childStatus.get(joinChildIndex); 
+        childStatus.remove(joinChildIndex);
+        child.remove(joinChildIndex);
+        
+        parentAccessLock.release();
+        
+        if(joinChildStatus == null)
+        {
+            return 0;
+        }
+        else
+        {
+            byte[] buf = new byte[4];
+            buf = Lib.bytesFromInt(joinChildStatus);
+            
+            int writeSize = writeVirtualMemory(statVaddr, buf);
+            if(writeSize == 4)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    
+    private int handleExit(int exitStatus)
+    {
+        unloadSections();
+        
+        for(UserProcess c: child)
+        {
+            c.parent = null;
+            
+        }
+        
+        if(parent != null)
+        {
+            parentAccessLock.acquire();
+            int index = -1;
+            for(int i=0; i<parent.child.size(); i++)
+            {
+                if(parent.child.get(i).processId == processId)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            
+            if(index != -1)
+            {
+                parent.childStatus.set(index, exitStatus);
+            }
+            
+            parentAccessLock.release();
+        }
+        
+        staticLock.acquire();
+        currentlyRunning--;
+        staticLock.release();
+        
+        if(currentlyRunning == 0)
+        {
+            Kernel.kernel.terminate();
+        }
+        else
+        {
+            UThread.finish();
+        }
+        
+        return 0;
+    }
 
     private static final int
         syscallHalt = 0,
@@ -655,6 +819,15 @@ public class UserProcess {
         
          case syscallWrite:
 	    return handleWrite(a0,a1,a2);
+            
+         case syscallExec:
+             return handleExec(a0, a1, a2);
+            
+         case syscallJoin:
+             return handleJoin(a0, a1);
+             
+         case syscallExit:
+             return handleExit(a0);
 
 	default:
 	    Lib.debug(dbgProcess, "Unknown syscall " + syscall);
@@ -712,12 +885,17 @@ public class UserProcess {
     // our defined datastructure
     
     private  static Lock staticLock = new Lock();
+    private static Lock parentAccessLock = new Lock();
+    
     private static int totalProcess = 0;
     private static final int TOTALFILESIZE=10;
+    private static int currentlyRunning = 0;
+    
     private int processId;
         
     private OpenFile[] files;
     private UserProcess parent;
     private ArrayList<UserProcess> child ;
     private ArrayList<Integer> childStatus;
+    private UThread myThread;
 }

@@ -134,7 +134,7 @@ public class UserKernel extends ThreadedKernel {
     synchronized public static void reclaimPage(int pagenumber){
         
        // pageSychLock.acquire();
-        pagetable.add(pagenumber);
+        pagetable.addFirst(pagenumber);
        // pageSychLock.release();
         
     }
