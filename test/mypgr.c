@@ -18,7 +18,7 @@ void main()
     readline(b, 10);
     char *execArgs[256];
     int status1,processID, processID1, processID2, status2;
-    printf("hi");
+    //printf("hi");
     printf("\n\n********************************** mypgr Program Loading-test **********************************\n\n");
     printf("mypgr forking echo.coff and joining... \n");
     processID = exec("echo.coff", 1,  execArgs);

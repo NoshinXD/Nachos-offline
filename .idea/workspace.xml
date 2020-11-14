@@ -2,24 +2,50 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1556a4b-cb03-4ea1-bda0-76fd4d0e200b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/machine/Processor.java" beforeDir="false" afterPath="$PROJECT_DIR$/machine/Processor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/nachos/userprog/UserProcess.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/nachos/userprog/UserProcess.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/proj2/nachos.conf" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/proj2/nachos.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/cat.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/cat.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/cp.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/cp.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/echo.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/echo.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/fibonacci_cmd.coff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/fibonacci_cmd.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/halt.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/halt.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/libnachos.a" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/libnachos.a" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/matmult.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/matmult.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/mv.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/mv.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/mypgr.c" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/mypgr.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/mypgr.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/mypgr.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/mypgr.o" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/mypgr.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/rm.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/rm.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/sh.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/sh.coff" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/nachos/test/sort.coff" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/nachos/test/sort.coff" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proj2/nachos.conf" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proj2/nachos/machine/Processor$Instruction.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/machine/Processor$Instruction.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proj2/nachos/machine/Processor$Mips.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/machine/Processor$Mips.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proj2/nachos/machine/Processor$MipsException.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/machine/Processor$MipsException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proj2/nachos/machine/Processor$ProcessorPrivilege.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/machine/Processor$ProcessorPrivilege.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proj2/nachos/machine/Processor.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/machine/Processor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proj2/nachos/threads/Alarm$AlarmTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/threads/Alarm$AlarmTest.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proj2/nachos/threads/Alarm$Pair.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/threads/Alarm$Pair.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proj2/nachos/threads/Alarm.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/threads/Alarm.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proj2/nachos/threads/Communicator.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/threads/Communicator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proj2/nachos/threads/Condition2$Condition2Test.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/threads/Condition2$Condition2Test.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proj2/nachos/threads/Condition2.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/threads/Condition2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proj2/nachos/threads/KThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/threads/KThread.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proj2/nachos/threads/ThreadedKernel.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/threads/ThreadedKernel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proj2/nachos/userprog/UserKernel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/userprog/UserKernel$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proj2/nachos/userprog/UserKernel.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/userprog/UserKernel.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proj2/nachos/userprog/UserProcess.class" beforeDir="false" afterPath="$PROJECT_DIR$/proj2/nachos/userprog/UserProcess.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sh.c" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/test/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/cat.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/cat.coff" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/cp.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/cp.coff" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/echo.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/echo.coff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/halt.c" beforeDir="false" afterPath="$PROJECT_DIR$/test/halt.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fibonacci_cmd.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fibonacci_cmd.coff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fibonacci_cmd.o" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test/halt.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/halt.coff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/halt.o" beforeDir="false" afterPath="$PROJECT_DIR$/test/halt.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/libnachos.a" beforeDir="false" afterPath="$PROJECT_DIR$/test/libnachos.a" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/matmult.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/matmult.coff" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/mv.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/mv.coff" afterDir="false" />
@@ -27,14 +53,8 @@
       <change beforePath="$PROJECT_DIR$/test/mypgr.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/mypgr.coff" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/mypgr.o" beforeDir="false" afterPath="$PROJECT_DIR$/test/mypgr.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/rm.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/rm.coff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/sh.c" beforeDir="false" afterPath="$PROJECT_DIR$/test/sh.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/sh.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/sh.coff" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/sort.coff" beforeDir="false" afterPath="$PROJECT_DIR$/test/sort.coff" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/threads/Alarm.java" beforeDir="false" afterPath="$PROJECT_DIR$/threads/Alarm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/threads/Communicator.java" beforeDir="false" afterPath="$PROJECT_DIR$/threads/Communicator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/threads/Condition2.java" beforeDir="false" afterPath="$PROJECT_DIR$/threads/Condition2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/threads/KThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/threads/KThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/threads/ThreadedKernel.java" beforeDir="false" afterPath="$PROJECT_DIR$/threads/ThreadedKernel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userprog/UserProcess.java" beforeDir="false" afterPath="$PROJECT_DIR$/userprog/UserProcess.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -98,38 +118,38 @@
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state x="779" y="311" width="424" height="491" key="FileChooserDialogImpl/72.27.1848.1053@72.27.1848.1053" timestamp="1605322995308" />
-    <state width="1802" height="200" key="GridCell.Tab.0.bottom" timestamp="1605328038475">
+    <state width="1802" height="293" key="GridCell.Tab.0.bottom" timestamp="1605337054356">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1802" height="200" key="GridCell.Tab.0.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1605328038475" />
-    <state width="1802" height="200" key="GridCell.Tab.0.center" timestamp="1605328038474">
+    <state width="1802" height="293" key="GridCell.Tab.0.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1605337054356" />
+    <state width="1802" height="293" key="GridCell.Tab.0.center" timestamp="1605337054355">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1802" height="200" key="GridCell.Tab.0.center/72.27.1848.1053@72.27.1848.1053" timestamp="1605328038474" />
-    <state width="1802" height="200" key="GridCell.Tab.0.left" timestamp="1605328038474">
+    <state width="1802" height="293" key="GridCell.Tab.0.center/72.27.1848.1053@72.27.1848.1053" timestamp="1605337054355" />
+    <state width="1802" height="293" key="GridCell.Tab.0.left" timestamp="1605337054355">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1802" height="200" key="GridCell.Tab.0.left/72.27.1848.1053@72.27.1848.1053" timestamp="1605328038474" />
-    <state width="1802" height="200" key="GridCell.Tab.0.right" timestamp="1605328038475">
+    <state width="1802" height="293" key="GridCell.Tab.0.left/72.27.1848.1053@72.27.1848.1053" timestamp="1605337054355" />
+    <state width="1802" height="293" key="GridCell.Tab.0.right" timestamp="1605337054355">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1802" height="200" key="GridCell.Tab.0.right/72.27.1848.1053@72.27.1848.1053" timestamp="1605328038475" />
-    <state width="1802" height="293" key="GridCell.Tab.1.bottom" timestamp="1605325578951">
+    <state width="1802" height="293" key="GridCell.Tab.0.right/72.27.1848.1053@72.27.1848.1053" timestamp="1605337054355" />
+    <state width="1802" height="293" key="GridCell.Tab.1.bottom" timestamp="1605337054356">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1802" height="293" key="GridCell.Tab.1.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1605325578951" />
-    <state width="1802" height="293" key="GridCell.Tab.1.center" timestamp="1605325578951">
+    <state width="1802" height="293" key="GridCell.Tab.1.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1605337054356" />
+    <state width="1802" height="293" key="GridCell.Tab.1.center" timestamp="1605337054356">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1802" height="293" key="GridCell.Tab.1.center/72.27.1848.1053@72.27.1848.1053" timestamp="1605325578951" />
-    <state width="1802" height="293" key="GridCell.Tab.1.left" timestamp="1605325578950">
+    <state width="1802" height="293" key="GridCell.Tab.1.center/72.27.1848.1053@72.27.1848.1053" timestamp="1605337054356" />
+    <state width="1802" height="293" key="GridCell.Tab.1.left" timestamp="1605337054356">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1802" height="293" key="GridCell.Tab.1.left/72.27.1848.1053@72.27.1848.1053" timestamp="1605325578950" />
-    <state width="1802" height="293" key="GridCell.Tab.1.right" timestamp="1605325578951">
+    <state width="1802" height="293" key="GridCell.Tab.1.left/72.27.1848.1053@72.27.1848.1053" timestamp="1605337054356" />
+    <state width="1802" height="293" key="GridCell.Tab.1.right" timestamp="1605337054356">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1802" height="293" key="GridCell.Tab.1.right/72.27.1848.1053@72.27.1848.1053" timestamp="1605325578951" />
+    <state width="1802" height="293" key="GridCell.Tab.1.right/72.27.1848.1053@72.27.1848.1053" timestamp="1605337054356" />
     <state x="479" y="131" width="1024" height="852" key="SettingsEditor" timestamp="1605291202966">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>

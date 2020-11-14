@@ -800,7 +800,7 @@ public class UserProcess {
         staticLock.acquire();
         currentlyRunning--;
         staticLock.release();
-        System.out.println("currentlyRunning: "+currentlyRunning);
+        //System.out.println("currentlyRunning: "+currentlyRunning);
 //        UThread.finish();
         if(currentlyRunning == 0)
         {
@@ -907,9 +907,11 @@ public class UserProcess {
 	default:
         System.out.println("Unexpected exception: " +
                 Processor.exceptionNames[cause]);
-	    Lib.debug(dbgProcess, "Unexpected exception: " +
-		      Processor.exceptionNames[cause]);
-	    Lib.assertNotReached("Unexpected exception");
+	    handleExit(-1);
+
+//	    Lib.debug(dbgProcess, "Unexpected exception: " +
+//		      Processor.exceptionNames[cause]);
+//	    Lib.assertNotReached("Unexpected exception");
 	}
     }
 
