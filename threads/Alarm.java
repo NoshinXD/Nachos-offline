@@ -101,9 +101,9 @@ public class Alarm {
             /*KThread k1 = new KThread(new PingTest(which + 1)).setName("forked thread " + (which + 1));
             k1.fork();
             k1.join();*/
-            System.out.println(KThread.currentThread().getName() + "rings at " + Machine.timer().getTime());
+            System.out.println(KThread.currentThread().getName() + " sleeps at " + Machine.timer().getTime());
             alarm.waitUntil(time);
-            System.out.println(KThread.currentThread().getName() + "rings at " + Machine.timer().getTime());  
+            System.out.println(KThread.currentThread().getName() + " wakes at " + Machine.timer().getTime());
 	}
         
     
@@ -112,6 +112,7 @@ public class Alarm {
     }
     
     public static void selfTest() {
+        System.out.println("******** testing alarm and waitUntil  **********");
 	Alarm alarm = ThreadedKernel.alarm;
         long time1 = 10000;
         long time2 = 20000;
@@ -126,6 +127,8 @@ public class Alarm {
         k1.join();
         k2.join();
         k3.join();
+
+        System.out.println("******** testing of alarm and waitUntil completed **********");
     }
     
     private class Pair {

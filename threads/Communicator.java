@@ -68,6 +68,8 @@ public class Communicator {
         listenerVariable.wakeAll();
         speakerVariable.sleep();
         room1=false;
+        room2= true;
+        speakerVariable.wakeAll();
         conditionVariablelock.release();
 
 

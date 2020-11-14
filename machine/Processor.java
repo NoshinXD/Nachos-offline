@@ -100,7 +100,7 @@ public final class Processor {
 	    catch (MipsException e) {
 		e.handle();
 	    }
-
+		//System.out.println("5 29 34 35: "+registers[5]+" "+registers[29]+" "+registers[34]+" "+registers[35]+" ");
 	    privilege.interrupt.tick(false);
 	}
     }
@@ -315,6 +315,7 @@ public final class Processor {
 	    if (translations == null || vpn >= translations.length ||
 		translations[vpn] == null ||
 		!translations[vpn].valid) {
+			System.out.println("vpn: "+vpn);
 		privilege.stats.numPageFaults++;
 		Lib.debug(dbgProcessor, "\t\tpage fault");
 		throw new MipsException(exceptionPageFault, vaddr);
