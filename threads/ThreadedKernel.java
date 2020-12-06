@@ -48,9 +48,9 @@ public class ThreadedKernel extends Kernel {
      * tests here.
      */	
     public void selfTest() {
-	//KThread.selfTest();
-        //Condition2.selfTest();
-        Alarm.selfTest();
+	KThread.selfTest();
+	Condition2.selfTest();
+	Alarm.selfTest();
 	Semaphore.selfTest();
 	SynchList.selfTest();
 	if (Machine.bank() != null) {
@@ -65,6 +65,7 @@ public class ThreadedKernel extends Kernel {
     public void run() {
     }
 
+    /**
     /**
      * Terminate this kernel. Never returns.
      */

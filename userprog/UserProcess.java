@@ -194,7 +194,7 @@ public class UserProcess {
            int physicalStartAddr = Machine.processor().makeAddress(pageTable[i].ppn, readOffset);
            
            for(int j = 0;j<readSize;j++){
-               data[offset+j]= memory[physicalStartAddr+j];
+               data[totalread+offset+j]= memory[physicalStartAddr+j];
            }
            
            totalread = totalread+readSize;
@@ -322,7 +322,7 @@ public class UserProcess {
            int physicalStartAddr = Machine.processor().makeAddress(pageTable[i].ppn, writeOffset);
            
            for(int j = 0;j<writeSize;j++){
-               memory[physicalStartAddr+j]= data[offset+j];
+               memory[physicalStartAddr+j]= data[totalwrite+offset+j];
            }
            
            totalwrite = totalwrite+writeSize;
@@ -683,8 +683,13 @@ public class UserProcess {
         
         byte[] buf = new byte[size];
         int totalRead = 0;
-        if(fileDescriptor==0){
-            totalRead = files[fileDescriptor].read(buf, 0, size);
+        if(fileDescriptor==0) {
+            nachos.machine.OpenFile console = files[fileDescriptor];
+            synchronized (console)
+            {
+                totalRead = console.read(buf, 0, size);
+            }
+
             
         }
         if(totalRead== -1){
@@ -730,7 +735,14 @@ public class UserProcess {
 //
         int totalWrite = 0;
         if(fileDescriptor==1){
-            totalWrite = files[fileDescriptor].write(buf, 0, totalRead);
+
+            nachos.machine.OpenFile console = files[fileDescriptor];
+            synchronized (console)
+            {
+                totalRead = console.write(buf, 0, totalRead);
+            }
+
+            //totalWrite = files[fileDescriptor].write(buf, 0, totalRead);
             
         }
         
@@ -784,7 +796,7 @@ public class UserProcess {
         {
             return -1;
         }
-        
+
         child.add(childProcess);
         childProcess.parent = this;
         return childProcess.processId;
@@ -811,15 +823,7 @@ public class UserProcess {
             }
         }
         
-//        for(int i=0; i<child.size(); i++)
-//        {
-//            if(child.get(i).processId == processID)
-//            {
-//                // joinChildIndex = i;
-//                joinChild = child.get(i);
-//                break;
-//            }
-//        }
+
         
         if(joinChild == null)
         {
@@ -870,7 +874,7 @@ public class UserProcess {
         
 
         
-       // System.out.println(" ekhane error thakte pare");
+
         if(parent != null)
         {
             parentAccessLock.acquire();
@@ -997,9 +1001,11 @@ public class UserProcess {
 	default:
         System.out.println("Unexpected exception: " +
                 Processor.exceptionNames[cause]);
-	    Lib.debug(dbgProcess, "Unexpected exception: " +
-		      Processor.exceptionNames[cause]);
-	    Lib.assertNotReached("Unexpected exception");
+	    handleExit(-1);
+
+//	    Lib.debug(dbgProcess, "Unexpected exception: " +
+//		      Processor.exceptionNames[cause]);
+//	    Lib.assertNotReached("Unexpected exception");
 	}
     }
 

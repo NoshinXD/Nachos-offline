@@ -127,7 +127,7 @@ public class Condition2 {
 	
 	public void run() {
 	    //System.out.println("Testing for task 2 & 4 initiated...");
-            
+            System.out.println("******** testing condition variable and synchronous send and receive  **********");
             KThread l1 = new KThread(new Listener(1, com)).setName("listener thread 1");
             KThread l2 = new KThread(new Listener(2, com)).setName("listener thread 2");
             KThread l3 = new KThread(new Listener(3, com)).setName("listener thread 3");
@@ -148,6 +148,7 @@ public class Condition2 {
             
             s1.join();
             s2.join();
+        System.out.println("******** testing of condition variable and synchronous send and receive  completed **********");
             
             //System.out.println("Testing for task 2 & 4 finished!");
 	}
@@ -167,7 +168,9 @@ public class Condition2 {
         //new KThread(new PingTest(1)).setName("forked thread1").fork();
         //new KThread(new PingTest(2)).setName("forked thread2").fork();
         //new KThread(new PingTest(3)).setName("forked thread3").fork();
-        new KThread(new Condition2Test(1)).setName("forked thread1").fork();
+        KThread t1 = new KThread(new Condition2Test(1)).setName("forked thread1");
+        t1.fork();
+        t1.join();
     }
 
     private Lock conditionLock;

@@ -483,7 +483,11 @@ public class KThread {
         //new KThread(new PingTest(1)).setName("forked thread1").fork();
         //new KThread(new PingTest(2)).setName("forked thread2").fork();
         //new KThread(new PingTest(3)).setName("forked thread3").fork();
-        new KThread(new JoinTest(1)).setName("forked thread1").fork();
+		System.out.println("******** testing KThread multithreading with join **********");
+        KThread t1 = new KThread(new JoinTest(0)).setName("forked thread1");
+        t1.fork();
+        t1.join();
+		System.out.println("******** testing of KThread multithreading with join is finished  **********");
     }
 
     private static final char dbgThread = 't';
