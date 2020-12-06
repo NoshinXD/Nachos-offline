@@ -167,9 +167,10 @@ public class UserProcess {
         
         int firstVPN = Machine.processor().pageFromAddress(vaddr);
         int lastVPN = Machine.processor().pageFromAddress(endVaddr);
-        
-        for(int i=firstVPN; i<=lastVPN; i++){
-            if( i<0 || i > pageTable.length || pageTable[i] == null || pageTable[i].valid == false){
+        int i = firstVPN;
+        while(i<=lastVPN){
+            
+              if( i<0 || i > pageTable.length || pageTable[i] == null || pageTable[i].valid == false){
                 break;
             }
             
@@ -198,8 +199,41 @@ public class UserProcess {
            
            totalread = totalread+readSize;
            vaddr = vaddr+readSize;
-           
+           i++;
+            
         }
+//        for(int i=firstVPN; i<=lastVPN; i++){
+//            if( i<0 || i > pageTable.length || pageTable[i] == null || pageTable[i].valid == false){
+//                break;
+//            }
+//            
+////            int physicalAddr = pageTable[i].ppn;
+////            int end
+//
+////            
+//           int pageStart = Machine.processor().makeAddress(i, 0);
+//           int pageEnd = Machine.processor().makeAddress(i, pageSize-1);
+//           int readSize = 0;
+//           
+//           if(endVaddr > pageEnd){
+//               readSize = pageEnd - vaddr+1;
+//           }
+//           
+//           else{
+//               readSize = endVaddr - vaddr +1;
+//           }
+//           
+//           int readOffset = vaddr - pageStart;
+//           int physicalStartAddr = Machine.processor().makeAddress(pageTable[i].ppn, readOffset);
+//           
+//           for(int j = 0;j<readSize;j++){
+//               data[offset+j]= memory[physicalStartAddr+j];
+//           }
+//           
+//           totalread = totalread+readSize;
+//           vaddr = vaddr+readSize;
+//           
+//        }
 
 //	if (vaddr < 0 || vaddr >= memory.length)
 //	    return 0;
@@ -261,8 +295,10 @@ public class UserProcess {
         int firstVPN = Machine.processor().pageFromAddress(vaddr);
         int lastVPN = Machine.processor().pageFromAddress(endVaddr);
         
-        for(int i=firstVPN; i<=lastVPN; i++){
-            if(i<0 || i> pageTable.length ||  pageTable[i] == null || pageTable[i].readOnly || pageTable[i].valid == false){
+        int i = firstVPN;
+        
+        while(i<=lastVPN){
+                if(i<0 || i> pageTable.length ||  pageTable[i] == null || pageTable[i].readOnly || pageTable[i].valid == false){
                 break;
             }
             
@@ -292,7 +328,41 @@ public class UserProcess {
            totalwrite = totalwrite+writeSize;
            vaddr = vaddr+writeSize;
            
+           i++;
         }
+        
+//       for(int i=firstVPN; i<=lastVPN; i++){
+//            if(i<0 || i> pageTable.length ||  pageTable[i] == null || pageTable[i].readOnly || pageTable[i].valid == false){
+//                break;
+//            }
+//            
+////            int physicalAddr = pageTable[i].ppn;
+////            int end
+//
+////            
+//           int pageStart = Machine.processor().makeAddress(i, 0);
+//           int pageEnd = Machine.processor().makeAddress(i, pageSize-1);
+//           int writeSize = 0;
+//           
+//           if(endVaddr > pageEnd){
+//               writeSize = pageEnd - vaddr+1;
+//           }
+//           
+//           else{
+//               writeSize = endVaddr - vaddr +1;
+//           }
+//           
+//           int writeOffset = vaddr - pageStart;
+//           int physicalStartAddr = Machine.processor().makeAddress(pageTable[i].ppn, writeOffset);
+//           
+//           for(int j = 0;j<writeSize;j++){
+//               memory[physicalStartAddr+j]= data[offset+j];
+//           }
+//           
+//           totalwrite = totalwrite+writeSize;
+//           vaddr = vaddr+writeSize;
+           
+//       }
         return totalwrite;
 
 //	if (vaddr < 0 || vaddr >= memory.length)
@@ -331,14 +401,24 @@ public class UserProcess {
             int ppn = UserKernel.allocatePage();
             if(ppn == -1)
             {
-                for(int j=0; j<pages.size(); j++)
+                
+                int j = 0;
+                while(j<pages.size())
                 {
                     numPages--;
                     TranslationEntry t = pages.get(j);
                     pageTable[t.vpn] = new TranslationEntry(t.vpn, 0, false, false, false, false);
                     UserKernel.reclaimPage(t.ppn);
-                    
+                    j++;
                 }
+//                for(int j=0; j<pages.size(); j++)
+//                {
+//                    numPages--;
+//                    TranslationEntry t = pages.get(j);
+//                    pageTable[t.vpn] = new TranslationEntry(t.vpn, 0, false, false, false, false);
+//                    UserKernel.reclaimPage(t.ppn);
+//                    
+//                }
                 return false;
             }
             
@@ -352,17 +432,31 @@ public class UserProcess {
     
     private void returnAllPages()
     {
-        for(int i=0; i<pageTable.length; i++)
-        {
-            TranslationEntry t = pageTable[i];
-            if(t.valid)
-            {
-                UserKernel.reclaimPage(t.ppn);
-                pageTable[t.vpn] = new TranslationEntry(t.vpn, 0, false, false, false, false);
+           int i = 0;
+           
+           while(i<pageTable.length){
+               
+               TranslationEntry t = pageTable[i];
+               if(t.valid)
+               {
+                   UserKernel.reclaimPage(t.ppn);
+                   pageTable[t.vpn] = new TranslationEntry(t.vpn, 0, false, false, false, false);
                     
                 
-            }
-        }
+               }
+               i++;
+           }
+//        for(int i=0; i<pageTable.length; i++)
+//        {
+//            TranslationEntry t = pageTable[i];
+//            if(t.valid)
+//            {
+//                UserKernel.reclaimPage(t.ppn);
+//                pageTable[t.vpn] = new TranslationEntry(t.vpn, 0, false, false, false, false);
+//                    
+//                
+//            }
+//        }
     }
     
 
@@ -505,17 +599,17 @@ public class UserProcess {
 
 	    for (int i=0; i<section.getLength(); i++) {
 		int vpn = section.getFirstVPN()+i;
-            TranslationEntry entry = pageTable[vpn];
+                TranslationEntry entry = pageTable[vpn];
 
-            if(entry==null || entry.valid== false )
-            {
-                return false;
-            }
+                if(entry==null || entry.valid== false )
+                {
+                    return false;
+                }
 
 
 
             // for now, just assume virtual addresses=physical addresses
-		    section.loadPage(i, entry.ppn);
+		section.loadPage(i, entry.ppn);
 	    }
 	}
 	
@@ -780,7 +874,7 @@ public class UserProcess {
         
 
         
-        //System.out.println(" ekhane error thakte pare");
+
         if(parent != null)
         {
             parentAccessLock.acquire();
