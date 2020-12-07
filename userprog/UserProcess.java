@@ -93,7 +93,7 @@ public class UserProcess {
      * <tt>UThread.restoreState()</tt>.
      */
     public void restoreState() {
-	Machine.processor().setPageTable(pageTable);
+	//Machine.processor().setPageTable(pageTable);
     }
 
     /**
