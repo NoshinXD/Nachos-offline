@@ -201,6 +201,7 @@ public final class Processor {
 	return new TranslationEntry(translations[number]);
     }
 
+
     /**
      * Fill the specified TLB entry.
      *
@@ -541,7 +542,7 @@ public final class Processor {
     /** <tt>true</tt> if using a software-managed TLB. */
     private boolean usingTLB;
     /** Number of TLB entries. */
-    private int tlbSize = 4;
+    private int tlbSize = 2;
     /**
      * Either an associative or direct-mapped set of translation entries,
      * depending on whether there is a TLB.

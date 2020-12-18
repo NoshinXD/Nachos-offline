@@ -1,7 +1,10 @@
 package nachos.userprog;
 
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import nachos.machine.*;
+import nachos.machine.Processor;
 import nachos.threads.*;
 import nachos.userprog.*;
 
@@ -28,6 +31,12 @@ public class UserKernel extends ThreadedKernel {
        // pageSychLock = new Lock();
 
 	console = new SynchConsole(Machine.console());
+
+	swapFile= nachos.threads.ThreadedKernel.fileSystem.open("swapFile.txt",true);
+//	swapFile.write(0,"hi".getBytes(),0,"hi".getBytes().length);
+        currentPosition = 0;
+
+
 	
 	Machine.processor().setExceptionHandler(new Runnable() {
 		public void run() { exceptionHandler(); }
@@ -124,6 +133,59 @@ public class UserKernel extends ThreadedKernel {
         if(!pagetable.isEmpty()){
             returnPage = pagetable.removeFirst();
         }
+        else
+        {
+            int randomPPN = (int) Math.floor(Math.random()*pagetable.size());
+            Hashtable<nachos.userprog.UserProcess.InvertedPageTableIndex, nachos.machine.TranslationEntry> invertedPageTable = nachos.userprog.UserProcess.invertedPageTable;
+            int i = 0;
+            nachos.machine.TranslationEntry swapEntry = null;
+            nachos.userprog.UserProcess.InvertedPageTableIndex swapIndex = null;
+            for(nachos.userprog.UserProcess.InvertedPageTableIndex t :invertedPageTable.keySet())
+            {
+                if(invertedPageTable.get(t).ppn==randomPPN)
+                {
+                    swapEntry = invertedPageTable.get(t);
+                    swapIndex = t;
+                    break;
+                }
+            }
+            if(swapEntry==null || swapIndex == null)
+            {
+                System.out.println("shouldn't happen");
+            }
+            if(swapFilePosition.containsKey(swapIndex)==true)
+            {
+                if(swapEntry.dirty==true)
+                {
+//                    swapFile.write(0,"hi".getBytes(),0,"hi".getBytes().length);
+                    byte[] memory = Machine.processor().getMemory();
+                    int physicalStartAddr = Machine.processor().makeAddress(randomPPN, 0);
+                    byte[] data = new byte[Processor.pageSize];
+                    for(int j = 0;j<data.length;j++){
+                        data[j]= memory[physicalStartAddr+j];
+                    }
+                    int pagePosition = swapFilePosition.get(swapIndex);
+                    swapFile.write(pagePosition,data,0,data.length);
+
+                }
+            }
+            else
+            {
+                byte[] memory = Machine.processor().getMemory();
+                int physicalStartAddr = Machine.processor().makeAddress(randomPPN, 0);
+                byte[] data = new byte[Processor.pageSize];
+                for(int j = 0;j<data.length;j++){
+                    data[j]= memory[physicalStartAddr+j];
+                }
+                swapFile.write(currentPosition,data,0,data.length);
+                swapFilePosition.put(swapIndex,currentPosition);
+                currentPosition+=data.length;
+            }
+            returnPage = randomPPN;
+            invertedPageTable.remove(swapIndex);
+//            System.out.println("hi");
+        }
+
         //pageSychLock.release();
         //Machine.interrupt().restore(s);
         
@@ -145,5 +207,8 @@ public class UserKernel extends ThreadedKernel {
     private static Coff dummy1 = null;
     private static LinkedList<Integer> pagetable = new LinkedList<>();
     //private static Lock pageSychLock = new Lock();
+    public static nachos.machine.OpenFile swapFile;
+    public static int currentPosition = 0;
+    public static HashMap<nachos.userprog.UserProcess.InvertedPageTableIndex, Integer> swapFilePosition;
     
 }

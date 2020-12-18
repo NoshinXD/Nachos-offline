@@ -6,6 +6,8 @@ import nachos.threads.*;
 import nachos.userprog.*;
 import nachos.vm.*;
 
+import java.io.File;
+
 /**
  * A <tt>UserProcess</tt> that supports demand-paging.
  */
@@ -87,17 +89,30 @@ public class VMProcess extends UserProcess {
 
 
     // my functions
-    public void handleTLBMiss(int badAddr){
+    public void handleTLBMiss(int badAddr) {
         //System.out.println("bad adress: "+badAddr);
         int vpn = Machine.processor().pageFromAddress(badAddr);
+//        File f = new File("killme.txt");
+//        try {
+//            f.createNewFile();
+//        } catch (Exception e)
+//        {
+//            System.out.println(e);
+//        }
+
         //System.out.println("vpn: "+vpn);
         nachos.machine.TranslationEntry t = null;
-        for(int i=0;i<pageTable.length;i++)
+        t = invertedPageTable.get(new InvertedPageTableIndex(processId,vpn));
+        if(t==null)
         {
-            if(pageTable[i].vpn == vpn)
+            System.out.println("null sorry!");
+            for(int i=0;i<pageTable.length;i++)
             {
-                t = pageTable[i];
-                break;
+                if(pageTable[i].vpn == vpn)
+                {
+                    t = pageTable[i];
+                    break;
+                }
             }
         }
         if(t==null)

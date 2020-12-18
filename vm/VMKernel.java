@@ -1,9 +1,13 @@
 package nachos.vm;
 
 import nachos.machine.*;
+import nachos.machine.OpenFile;
 import nachos.threads.*;
+import nachos.threads.ThreadedKernel;
 import nachos.userprog.*;
 import nachos.vm.*;
+
+import java.io.*;
 
 /**
  * A kernel that can support multiple demand-paging user processes.
@@ -20,7 +24,20 @@ public class VMKernel extends UserKernel {
      * Initialize this kernel.
      */
     public void initialize(String[] args) {
-	super.initialize(args);
+
+        super.initialize(args);
+
+
+//        try {
+//            FileOutputStream fos = new FileOutputStream(f);
+//            String text = "hi";
+//            fos.write(text.getBytes());
+//            fos.flush();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
     }
 
     /**
@@ -48,4 +65,6 @@ public class VMKernel extends UserKernel {
     private static VMProcess dummy1 = null;
 
     private static final char dbgVM = 'v';
+
+
 }

@@ -1,13 +1,14 @@
 package nachos.userprog;
 
 import nachos.machine.*;
+import nachos.machine.TranslationEntry;
 import nachos.threads.*;
 import nachos.userprog.*;
 
-import java.io.EOFException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.io.*;
+//import java.security.AccessController;
+//import java.security.PrivilegedAction;
+import java.util.*;
 
 /**
  * Encapsulates the state of a user process that is not contained in its
@@ -44,6 +45,27 @@ public class UserProcess {
         child = new LinkedList<>();
         childStatus = new HashMap<>();
         parent = null;
+
+//        File swapFile = null;
+//
+//        if(swapFile==null)
+//        {
+//            swapFile = (File) AccessController.doPrivileged(new PrivilegedAction(){
+//                public Object run()
+//                {
+//                    return new File("swapArea.txt");
+//                }
+//            });
+//        }
+//        if(swapFile.isFile()==false)
+//        {
+//            try {
+//                swapFile.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
         
         
     }
@@ -70,9 +92,29 @@ public class UserProcess {
     public boolean execute(String name, String[] args) {
 	if (!load(name, args))
 	    return false;
+
+
+
 	
         staticLock.acquire();
         currentlyRunning++;
+        for(int i=0;i<pageTable.length;i++)
+        {
+            if(pageTable[i].valid==true)
+            {
+//            if(invertedPageTable.size()>10)
+//            {
+//                try{
+//                    pageReplacement(processId);
+//                }catch (Exception e){
+//                    System.out.println(e);
+//                }
+//
+//            }
+                invertedPageTable.put(new InvertedPageTableIndex(processId,pageTable[i].vpn),new TranslationEntry(pageTable[i]));
+            }
+
+        }
         staticLock.release();
         
 	myThread = (UThread) new UThread(this).setName(name);
@@ -573,6 +615,8 @@ public class UserProcess {
 	    stringOffset += 1;
 	}
 
+
+
 	return true;
     }
 
@@ -1034,11 +1078,133 @@ public class UserProcess {
     private static final int TOTALFILESIZE=10;
     private static int currentlyRunning = 0;
     
-    private int processId;
+    protected int processId;
         
     private OpenFile[] files;
     private UserProcess parent;
     private LinkedList<UserProcess> child ;
     private HashMap<Integer,Integer> childStatus;
     private UThread myThread;
+
+
+
+    // for proj 3
+
+    protected class InvertedPageTableIndex implements Serializable{
+        public int processID;
+        public int vpn;
+
+        public InvertedPageTableIndex(int processID, int vpn) {
+            this.processID = processID;
+            this.vpn = vpn;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            InvertedPageTableIndex that = (InvertedPageTableIndex) o;
+            return processID == that.processID &&
+                    vpn == that.vpn;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(processID, vpn);
+        }
+    }
+
+    protected static Hashtable<InvertedPageTableIndex,TranslationEntry> invertedPageTable = new Hashtable<>();
+//    public static ArrayList<>
+//    //public static File swapFile = null;
+//    synchronized static void pageReplacement(int processID)throws Exception{
+////        if(swapFile==null)
+////        {
+////            swapFile = (File) AccessController.doPrivileged(new PrivilegedAction(){
+////                public Object run()
+////                {
+////                    return new File("swapArea.txt");
+////                }
+////            });
+////        }
+////        if(swapFile.isFile()==false)
+////        {
+////            swapFile.createNewFile();
+////
+////        }
+////        ObjectInputStream fileStream = new ObjectInputStream(new FileInputStream(swapFile));
+//        InvertedPageTableIndex index = null;
+//        for(InvertedPageTableIndex key: invertedPageTable.keySet()){
+//            if(key.processID != processID)
+//            {
+//                index = key;
+//                if(invertedPageTable.get(key).dirty==false)
+//                {
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if(index==null)
+//        {
+//            int randomIndex = (int) Math.floor((Math.random()*invertedPageTable.size()))% invertedPageTable.size();
+//            for(InvertedPageTableIndex key: invertedPageTable.keySet()){
+//
+//                if(randomIndex == 0)
+//                {
+//                    index = key;
+//                }
+//                randomIndex--;
+//            }
+//        }
+//
+//        TranslationEntry t = invertedPageTable.get(index);
+//        if(t.dirty==false)
+//        {
+//            invertedPageTable.remove(index);
+//            return;
+//        }
+//
+////        ObjectInputStream ois = new ObjectInputStream(fileStream);
+////        FileOutputStream fisTemp = new FileOutputStream("temp.txt");
+////        ObjectOutputStream oosTemp = new ObjectOutputStream(fisTemp);
+////        oosTemp.writeObject(index);
+////        oosTemp.writeObject(t);
+////        while(true)
+////        {
+////
+////            if(ois.available()==0)
+////            {
+////                break;
+////            }
+////            InvertedPageTableIndex t1 = (InvertedPageTableIndex) ois.readObject();
+////            TranslationEntry t2 = (TranslationEntry) ois.readObject();
+////            if(t1.processID==processID && t1.vpn == t.vpn)
+////            {
+////                continue;
+////            }
+////            oosTemp.writeObject(t1);
+////            oosTemp.writeObject(t2);
+////
+////
+////        }
+////
+////
+////
+////        fileStream.close();
+////        fisTemp.close();
+////        ois.close();
+////        oosTemp.close();
+////
+////        File f1 = new File("swapArea.txt");
+////        f1.delete();
+////        File f2 = new File("temp.txt");
+////        File f3 = new File("swapArea.txt");
+////        f2.renameTo(f3);
+//
+//
+//
+//
+//    }
+
 }
